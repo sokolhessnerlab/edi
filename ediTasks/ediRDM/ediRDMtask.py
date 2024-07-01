@@ -67,7 +67,8 @@ import statistics
 # change directory to ediRDM folder with all the task-related files
 print(os.getcwd()) # getting the current directory
 homeDir = os.path.expanduser('~') # setting to home directory 
-ediTasksDir = os.path.join("Desktop", "edi", "ediTasks") # getting ediTasks directory
+# ediTasksDir = os.path.join("Desktop", "edi", "ediTasks") # getting ediTasks directory
+ediTasksDir = os.path.join("Documents", "GitHub", "edi", "ediTasks")
 os.chdir(os.path.join(homeDir, ediTasksDir, "ediRDM")) # joining the pathways together and then changing the directory to it
 print(os.getcwd())
 #dirPath = os.chdir(dirName + os.sep + "ediRDM") # os.sep for mac and windows
