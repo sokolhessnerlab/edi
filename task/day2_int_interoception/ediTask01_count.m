@@ -1,10 +1,10 @@
 
 function [output] = ediTask01_count(subjID,doHB,isreal,doprac)
 
-% function [output] = ediTask01(subjID,doHB,isreal,doprac)
+% function [output] = ediTask01_count(subjID,doHB,isreal,doprac)
 %
-% Runs the HD task for EDI.
-% subjID = The three-digit text string (e.g. ['000'])
+% Runs the HD and HC tasks for EDI.
+% subjID = The three-digit TEXT string (e.g. ['000'])
 % doHB = 0 if you don't want to do the heartbeat task, [1] if you do.
 % isreal = 0 if this isn't "real" (makes it short), [1] if it is real
 % doprac = [1] if you want to do the practice, 0 if you do not
@@ -13,7 +13,7 @@ function [output] = ediTask01_count(subjID,doHB,isreal,doprac)
 %   see http://psychtoolbox.org/FaqTTLTrigger
 %   see http://apps.usd.edu/coglab/psyc770/IO64.html
 %
-% PSH 2/9/14
+% PSH 7/2/24
 
 if nargin < 4
     doprac = 1; % if [1], do practice; if 0, don't do practice.
@@ -36,6 +36,7 @@ end
 
 try
     homepath = 'C:\Users\sokolhessnerlab\Desktop\ediTask\output';
+    taskpath = 'C:\Users\sokolhessnerlab\Desktop\ediTask\task';
     %homepath = '~/Documents/PSH/Libraries/MATLAB_lib/IMA/';
     cd(homepath);
 catch
@@ -236,7 +237,7 @@ try
             end
         end
         
-        DrawFormattedText(wind,'If you have any questions, please ask your experimenter now!\n\nOtherwise, you''re ready to begin the practice. Remember: take a moment to try to find your heartbeat now, before beginning!\n\n When you''ve got it, press "v" or "b" to begin.','center','center',blk,40);
+        DrawFormattedText(wind,'If you have any questions, please ask your experimenter now!\n\nOtherwise, you''re ready to begin the practice. Remember: take a moment to try to find your heartbeat now, BEFORE beginning!\n\n When you''ve got it, press "v" or "b" to begin.','center','center',blk,40);
         Screen('Flip',wind);
         WaitSecs(1);
         while 1
@@ -439,7 +440,7 @@ try
         
     end
     
-    DrawFormattedText(wind,'Do you have any questions before we begin?\n\n\nWaiting for Experimenter.','center','center',blk,40);
+    DrawFormattedText(wind,'Do you have any questions before we begin?\n\n\nWaiting for Experimenter to start the task.','center','center',blk,40);
     Screen('Flip', wind);
     while 1
         [keyIsDown, secs, keyCode] = KbCheck;
@@ -665,33 +666,35 @@ try
     
     %%%% Picking the random outcome %%%%
     
-    DrawFormattedText(wind, 'Randomly selecting choice...', 'center', 'center', blk, 40);
+    DrawFormattedText(wind, 'Tone Task complete!', 'center', 'center', blk, 40);
     Screen('Flip',wind);
     WaitSecs(2);
     
-    pickt = randi(nT);
-    
-    if output.choice(pickt) == syncState(pickt) % if they were right
-        otc = 1;
-        txt1 = 'were correct';
-        txt2 = '+$5';
-        txt3 = '+$10';
-    elseif output.choice(pickt) == 1-syncState(pickt) % if they were wrong
-        otc = 0;
-        txt1 = 'were incorrect';
-        txt2 = '$0';
-        txt3 = '$5';
-    elseif isnan(output.choice(pickt)) % if they did not respond in time
-        otc = NaN;
-        txt1 = 'did not respond in time';
-        txt2 = '-$5';
-        txt3 = '$0';
-    end
-    
-    output.pickt = pickt;
-    output.otc = otc;
-    
-    DrawFormattedText(wind,sprintf('Randomly selected trial: #%d.\n\nOn this trial, you %s. As a result, we will adjust the $5 we''ve already given you by %s, for a total bonus of %s.\n\n\nNext, whenever you''re ready, we have the heartbeat counting task!',pickt,txt1,txt2,txt3),'center','center',blk,40);
+%     pickt = randi(nT);
+%     
+%     if output.choice(pickt) == syncState(pickt) % if they were right
+%         otc = 1;
+%         txt1 = 'were correct';
+%         txt2 = '+$5';
+%         txt3 = '+$10';
+%     elseif output.choice(pickt) == 1-syncState(pickt) % if they were wrong
+%         otc = 0;
+%         txt1 = 'were incorrect';
+%         txt2 = '$0';
+%         txt3 = '$5';
+%     elseif isnan(output.choice(pickt)) % if they did not respond in time
+%         otc = NaN;
+%         txt1 = 'did not respond in time';
+%         txt2 = '-$5';
+%         txt3 = '$0';
+%     end
+%     
+%     output.pickt = pickt;
+%     output.otc = otc;
+%     
+%     DrawFormattedText(wind,sprintf('Randomly selected trial: #%d.\n\nOn this trial, you %s. As a result, we will adjust the $5 we''ve already given you by %s, for a total bonus of %s.\n\n\nNext, whenever you''re ready, we have the heartbeat counting task!',pickt,txt1,txt2,txt3),'center','center',blk,40);
+%     Screen('Flip',wind);
+    DrawFormattedText(wind,'Take a moment now to relax.\n\nNext, whenever you''re ready, we have the heartbeat counting task!','center','center',blk,40);
     Screen('Flip',wind);
     while 1
         [keyIsDown, ~, keyCode] = KbCheck;
@@ -720,7 +723,7 @@ try
     nHBs = nan(length(ctrials),2); % # of HBs in col 1, # of seconds in col 2
     
     DrawFormattedText(wind,'We''re now ready to begin the Counting Task.\n\nRemember, you just need to start counting your heartbeat when the screen says "COUNT". Sometimes you''ll count for a short amount of time, others for a longer amount of time. Just keep going until the screen says "Time''s up!". When time is up, you''ll tell your experimenter how many heartbeats you counted.\n\nPlease don''t feel for your heartbeat directly - try to sense it instead.','center','center',blk,40);
-    DrawFormattedText(wind,'Waiting for experimenter','center',.9*h,blk,40);
+    DrawFormattedText(wind,'Waiting for experimenter to start the task','center',.9*h,blk,40);
     Screen('Flip',wind);
     WaitSecs(1);
     
@@ -750,7 +753,7 @@ try
         
         nc = 0;
         
-        DrawFormattedText(wind,'COUNT','center','center',blk,40);
+        DrawFormattedText(wind,'COUNT','center','center',blk,50);
         Screen('Flip',wind);
         startT = GetSecs;
         
@@ -815,6 +818,8 @@ try
     if isreal
         ShowCursor
     end
+    
+    cd(taskpath); % move back to the directory with the task
     
     sca
     Priority(0);
