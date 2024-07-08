@@ -68,9 +68,26 @@ import statistics
 print(os.getcwd()) # getting the current directory
 homeDir = os.path.expanduser('~') # setting to home directory 
 # ediTasksDir = os.path.join("Desktop", "edi", "ediTasks") # getting ediTasks directory
-ediTasksDir = os.path.join("Documents", "GitHub", "edi", "ediTasks")
+ediTasksDir1 = os.path.join("Documents", "GitHub", "edi", "ediTasks", "day1_rdm_wmc")
+ediTasksDir2 = os.path.join("Desktop", "GitHub", "edi", "ediTasks")
+os.chdir(os.path.join(homeDir, ediTasksDir1 or ediTasksDir2, "ediRDM")) # joining the pathways together and then changing the directory to it
+print(os.getcwd())
+
+ediTasksDir = os.path.join("Documents" or "Desktop", "GitHub", "edi", "ediTasks", "day1_rdm_wmc")
 os.chdir(os.path.join(homeDir, ediTasksDir, "ediRDM")) # joining the pathways together and then changing the directory to it
 print(os.getcwd())
+
+print(os.getcwd()) # getting the current directory
+homeDir = os.path.expanduser('~') 
+ediDay1Dir = os.path.join("GitHub", "edi", "ediTasks", "day1_rdm_wmc")
+if os.path.exists(os.path.join(homeDir, "Desktop", ediDay1Dir)):
+    rdmDir = os.path.join(homeDir, "Desktop", ediDay1Dir)
+elif os.path.exists(os.path.join(homeDir, "Documents", ediDay1Dir)):
+    rdmDir = os.path.join(homeDir, "Documents", ediDay1Dir)
+os.chdir(os.path.join(homeDir, rdmDir, "ediRDM")) # joining the pathways together and then changing the directory to it
+print(os.getcwd())
+
+
 #dirPath = os.chdir(dirName + os.sep + "ediRDM") # os.sep for mac and windows
 #dirPath = os.chdir("Desktop" + os.sep + "edi" + os.sep + "ediTasks" + os.sep + "ediRDM") # test run on Von's laptop, tabletas
 
