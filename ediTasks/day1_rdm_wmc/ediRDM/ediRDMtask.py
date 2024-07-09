@@ -201,8 +201,8 @@ isReal = 0 # 1 = yes, a real run vs. 0 = no, a test run
 
 if isReal == 0:
     practiceSet = 3
-    staticSet = 5
-    dynamicSet = 5
+    staticSet = 3
+    dynamicSet = 3
 elif isReal == 1:
     practiceSet = 5
     staticSet = 50 # 40 real trials & 10 check trials
