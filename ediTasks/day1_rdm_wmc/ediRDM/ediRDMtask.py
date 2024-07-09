@@ -56,7 +56,7 @@ def ediRDM(subID, isReal, doET, dirName, dataDirName): # ediMain wrapper functio
     import numpy as np # have just in case
     import math
     
-    subID = random.randint(1, 10)
+    #subID = random.randint(1, 10)
     
     #
     ##
@@ -200,7 +200,7 @@ def ediRDM(subID, isReal, doET, dirName, dataDirName): # ediMain wrapper functio
     #
     ##
     ### REAL VS. TEST RUN ###
-    isReal = 0 # 1 = yes, a real run vs. 0 = no, a test run
+    #isReal = 0 # 1 = yes, a real run vs. 0 = no, a test run
     
     if isReal == 0:
         practiceSet = 3
@@ -237,7 +237,7 @@ def ediRDM(subID, isReal, doET, dirName, dataDirName): # ediMain wrapper functio
     #
     ##
     ### WITH EYE-TRACKING VS. ONLY BEHAVIORAL ###
-    doET = 0 # 1 = yes, do eye-tracking vs. 0 = no, only do behavioral
+    #doET = 0 # 1 = yes, do eye-tracking vs. 0 = no, only do behavioral
     
     if doET:
         
