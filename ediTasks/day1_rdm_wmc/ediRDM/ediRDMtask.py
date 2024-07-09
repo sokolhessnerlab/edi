@@ -1065,11 +1065,11 @@ if doET:
     et.closeDataFile()
     time_str = time.strftime("_%Y_%m_%d_%H_%M_%S", time.localtime())
     session_identifier = edf_fname + time_str
-    et.receiveDataFile(edf_fname + '.edf', os.path.join('/Users/jvonm/Documents/GitHub/edi/ediTasks/day1_rdm_wmc/ediData/ediRDMpupillometry' + session_identifier + '.edf'))
+    et.receiveDataFile(edf_fname + '.edf', os.path.join('/Users/Display/Desktop/Github/edi/ediTasks/day1_rdm_wmc/ediData/ediRDMpupillometry' + session_identifier + '.edf'))
     et.close()
 
 if doET:
-    subprocess.run(["edf2asc.exe", os.path.join('/Users/jvonm/Documents/GitHub/edi/ediTasks/day1_rdm_wmc/ediData/ediRDMpupillometry', session_identifier + '.edf')])
+    subprocess.run(["edf2asc.exe", os.path.join('/Users/Display/Desktop/Github/edi/ediTasks/day1_rdm_wmc/ediData/ediRDMpupillometry', session_identifier + '.edf')])
 
 
 
