@@ -1404,7 +1404,7 @@ def ospanTask(subID, isReal,dirName, dataDirName):
                 
                 #save the second math practice of the experiment
                 datetime = time.strftime("%Y%m%d-%H%M%S"); # save date and time
-                filenameMathPrac2 = dataDirectoryPath + "cgeOSPANmathPractice2_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+                filenameMathPrac2 = dataDirectoryPath + "ediOSPANmathPractice2_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
                 mathPracticeData2.to_csv(filenameMathPrac2)
                 
                 #display screen that says they still didnt get any math correct and the experiment is done.
@@ -2534,7 +2534,7 @@ def ospanTask(subID, isReal,dirName, dataDirName):
                 mathPracticeData = pd.DataFrame(mathPracticeData)
                 mathPracticeData.columns = ["operation","response","responseCorrect", "solveMathRT","suggestedAnswer", "suggestAnswerCorrect","trueFalseRT","trial"]
                 mathPracticeData = mathPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameMathPrac = dataDirectoryPath + "cgeOSPANmathPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameMathPrac = dataDirectoryPath + "ediOSPANmathPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             mathPracticeData.to_csv(filenameMathPrac)
                 
         if 'letterPracticeData' in locals(): 
@@ -2542,7 +2542,7 @@ def ospanTask(subID, isReal,dirName, dataDirName):
                 letterPracticeData = pd.DataFrame(letterPracticeData) #convert data into pandas dataframe
                 letterPracticeData.columns=["setSize","lettersShown","lettersRecall","correctCount","trial"] # add column names
                 letterPracticeData = letterPracticeData.iloc[1: , :] # drop the first row which are the variable namesPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameLetterPrac = dataDirectoryPath + "cgeOSPANletterPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameLetterPrac = dataDirectoryPath + "ediOSPANletterPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             letterPracticeData.to_csv(filenameLetterPrac)   
             
         if 'bothPracticeData' in locals(): 
@@ -2550,7 +2550,7 @@ def ospanTask(subID, isReal,dirName, dataDirName):
                 bothPracticeData = pd.DataFrame(bothPracticeData) #convert data into pandas dataframe
                 bothPracticeData.columns=["operation1","sum1","operation2","sign","sum2","totalSum","showCorrectAns","suggestedAnswer","mathResponse","mathResponseCorrect", "solveMathRT", "trueFalseRT", "setSize","setNumber","trialPerSet", "lettersShown", "lettersRecall", "correctCount","percentCorrectMath", "totalMathErrorsInSet"] # add column names
                 bothPracticeData = bothPracticeData.iloc[1: , :] # drop the first row which are the variable bothPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameBothPrac =dataDirectoryPath + "cgeOSPANbothPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameBothPrac =dataDirectoryPath + "ediOSPANbothPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             bothPracticeData.to_csv(filenameBothPrac)
             
         if 'bothRealData' in locals(): 
@@ -2558,7 +2558,7 @@ def ospanTask(subID, isReal,dirName, dataDirName):
                 bothRealData = pd.DataFrame(bothRealData) #convert data into pandas dataframe
                 bothRealData.columns=["operation1","sum1","operation2","sign","sum2","totalSum","showCorrectAns","suggestedAnswer","mathResponse","mathResponseCorrect", "solveMathRT", "trueFalseRT", "setSize","setNumber","trialPerSet", "lettersShown", "lettersRecall", "correctCount", "percentCorrectMath", "totalMathErrorsInSet"]# add column names
                 bothRealData = bothRealData.iloc[1: , :] # drop the first row which are the variable bothPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameBothReal =dataDirectoryPath + "cgeOSPANbothReal_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameBothReal =dataDirectoryPath + "ediOSPANbothReal_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             bothRealData.to_csv(filenameBothReal)
             
             

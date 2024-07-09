@@ -3179,7 +3179,7 @@ def symSpanTask(subID, isReal, dirName, dataDirName):
                 squarePracticeData = pd.DataFrame(squarePracticeData)
                 squarePracticeData.columns=["setSize","redSquarePos", "redSquareNumber","squareRecall","correctCount","trial"]    
                 squarePracticeData = squarePracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameSquarePrac = dataDirectoryPath + "cgeSYMSPANsquarePractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameSquarePrac = dataDirectoryPath + "ediSYMSPANsquarePractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             squarePracticeData.to_csv(filenameSquarePrac)
     
         if 'symPracticeData' in locals():
@@ -3187,7 +3187,7 @@ def symSpanTask(subID, isReal, dirName, dataDirName):
                 symPracticeData = pd.DataFrame(symPracticeData) #convert data into pandas dataframe
                 symPracticeData.columns=["imageName","symmetrical","response", "responseCorrect","solveSymRT", "yesNoRT","trial"]# add column names
                 symPracticeData = symPracticeData.iloc[1: , :] # drop the first row which are the variable namesPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameSymPrac = dataDirectoryPath + "cgeSYMSPANsymmetryPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameSymPrac = dataDirectoryPath + "ediSYMSPANsymmetryPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             symPracticeData.to_csv(filenameSymPrac)
                 
         if 'bothPracticeData' in locals():
@@ -3195,7 +3195,7 @@ def symSpanTask(subID, isReal, dirName, dataDirName):
                 bothPracticeData = pd.DataFrame(bothPracticeData) #convert data into pandas dataframe
                 bothPracticeData.columns=["imageName","imageNumber","symmetrical","symResponse","symResponseBinom","symResponseCorrect","solveSymRT","symYesNoRT","setSize","setNumber", "trialPerSet", "redSquarePos", "redSquareNumber","squareRecall","squareCorrectCount", "percentCorrectSym", "totalSymErrorsInSet"] # add column names
                 bothPracticeData = bothPracticeData.iloc[1: , :] # drop the first row which are the variable bothPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameBothPrac =dataDirectoryPath + "cgeSYMSPANbothPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameBothPrac =dataDirectoryPath + "ediSYMSPANbothPractice_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             bothPracticeData.to_csv(filenameBothPrac)
         
         if 'bothRealData' in locals():
@@ -3203,7 +3203,7 @@ def symSpanTask(subID, isReal, dirName, dataDirName):
                 bothRealData = pd.DataFrame(bothRealData) #convert data into pandas dataframe
                 bothRealData.columns=["imageName","imageNumber","symmetrical","symResponse","symResponseBinom","symResponseCorrect","solveSymRT","symYesNoRT","setSize","setNumber", "trialPerSet", "redSquarePos", "redSquareNumber","squareRecall","squareCorrectCount", "percentCorrectSym", "totalSymErrorsInSet"] # add column names
                 bothRealData = bothRealData.iloc[1: , :] # drop the first row which are the variable bothPracticeData.iloc[1: , :] # drop the first row which are the variable names
-            filenameBothReal =dataDirectoryPath + "cgeSYMSPANbothReal_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
+            filenameBothReal =dataDirectoryPath + "ediSYMSPANbothReal_" + "sub" + subID + "_" + datetime + ".csv"; # make filename
             bothRealData.to_csv(filenameBothReal)
             
             

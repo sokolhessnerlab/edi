@@ -13,7 +13,7 @@ This script does some set up for the experiment and calls all required scripts t
 
     
 
-def cge(subID, isReal, compNum, taskSet, doET): # define the function and specify the argument(s)
+def edi(subID, isReal, compNum, taskSet, doET): # define the function and specify the argument(s)
 
     # subID
             # Must be three digits (e.g., 001, 093, 458, etc.)
@@ -43,21 +43,21 @@ def cge(subID, isReal, compNum, taskSet, doET): # define the function and specif
 
     # SET WORKING DIRECTORY #
     if compNum ==1:
-        dirName = ("C:\\Users\\jvonm\\Documents\\GitHub\\cge\\CGE")
-        dataDirName = ("C:\\Users\\jvonm\\Documents\\GitHub\\cge\\CGE\\data")
+        dirName = ("C:\\Users\\jvonm\\Documents\\GitHub\\edi\\ediTasks\\day1_rdm_wmc\\ediRDM")
+        dataDirName = ("\\GitHub\\edi\\ediTasks\\day1_rdm_wmc\\ediData")
     elif compNum ==2:
         dirName = ("/Users/shlab/Documents/Github/cge/CGE/")
         dataDirName = ("/Users/shlab/Documents/Github/cge/CGE/data")
     elif compNum ==3:
-        dirName = ("/Users/Display/Desktop/Github/cge/CGE/")
-        dataDirName = ("/Users/Display/Desktop/Github/cge/CGE/data")
+        dirName = ("/Users/Display/Desktop/GitHub/edi/ediTasks/day1_rdm_wmc/ediRDM")
+        dataDirName = ("/Users/Display/Desktop/GitHub/edi/ediTasks/day1_rdm_wmc/ediData")
     
     os.chdir(dirName)
 
     # IMPORT TASK SCRIPTS #
     # cgeRDM
     #from cgeRDMdraftET_test import cgeRDM 
-    import cgeRDM_noWrap
+    from ediRDMtask import ediRDM
     # OSpan
     from ospan.ospanTaskModule import ospanTask
     # SymSpan
@@ -67,7 +67,7 @@ def cge(subID, isReal, compNum, taskSet, doET): # define the function and specif
     if taskSet ==1:
         
         # risky decision-making task (input arguments determined above) 
-        cgeRDM_noWrap
+        ediRDM((subID, isReal, dirName, dataDirName, doET))
         #cgeRDM(subID, isReal, doET)
         
         # ospan instructions + instructions quiz + practice + task
@@ -86,9 +86,9 @@ def cge(subID, isReal, compNum, taskSet, doET): # define the function and specif
         
         symSpanTask(subID, isReal,dirName, dataDirName)
 
-    win.close()
+    #win.close()
     #core.quit()
-    sys.exit()
+    #sys.exit()
     
     # simple analysis script (checks for missing trials, runs simple glm, scores span tasks, notes whether we keep the data and then adjusts the condition file)
 

@@ -36,7 +36,7 @@ Author: J. Von R. Monteza (07/01/2024)
 
 
 
-#def ediRDMtask(subID, isReal, doET, dirName, dataDirName) # ediMain wrapper function
+#def ediRDM(subID, isReal, doET, dirName, dataDirName) # ediMain wrapper function
 
 #
 ##
@@ -360,6 +360,16 @@ dynaStartTxt = visual.TextStim(
 endStartTxt = visual.TextStim(
     win,
     text = 'You have sucessfully completed the first task in this experiment!\n\nPlease take a brief 1 minute break. \n\nYou are welcome to take a longer break, but keep in mind this study should take no longer than 1 hour to complete. \n\nWhen you are ready to move on, press "enter to continue.\n',
+    font = a,
+    height = instructionsH,
+    pos = center,
+    color = c2
+)
+
+# call experimenter instructions
+callStartTxt = visual.TextStim(
+    win,
+    text = 'You have sucessfully completed the first task in this experiment!\n\nPlease press the white call button.\n',
     font = a,
     height = instructionsH,
     pos = center,
@@ -1039,7 +1049,7 @@ for d in range(dynamicSet):
 ##
 ### CLOSING INSTRUCTIONS ###
 
-# dynamic choice set instructions
+# break instructions
 endStartTxt.draw()
 win.flip()
 endInstructionsStart = timer.getTime()
@@ -1048,6 +1058,16 @@ response = event.waitKeys(keyList = ['return'], timeStamped = timer)
 endInstructionsEnd = response[0][1]
 empty_data_appending()
 ediData[data_appending_index()][17:19] = [endInstructionsStart, endInstructionsEnd]
+
+# call experimenter instructions
+callStartTxt.draw()
+win.flip()
+callInstructionsStart = timer.getTime()
+endTask()
+response = event.waitKeys(keyList = ['space'], timeStamped = timer)
+callInstructionsEnd = response[0][1]
+empty_data_appending()
+ediData[data_appending_index()][17:19] = [callInstructionsStart, callInstructionsEnd]
 
 if doET:
     et.sendMessage('cgeRDM Recording Stopped')
