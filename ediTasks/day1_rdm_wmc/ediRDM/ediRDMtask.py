@@ -214,10 +214,10 @@ elif isReal == 1:
 isCount = 1 # 1 = yes, count trials vs. 0 = no, don't count trials
 
 if isCount == 0:
-    countLoc = [0, -.35]
+    countLoc = [0, 7]
     countColor = c1
 elif isCount == 1:
-    countLoc = [0, 7]
+    countLoc = [0, -.35]
     countColor = c2
 
 #
@@ -1056,6 +1056,22 @@ response = event.waitKeys(keyList = ['return'], timeStamped = timer)
 endInstructionsEnd = response[0][1]
 empty_data_appending()
 ediData[data_appending_index()][17:19] = [endInstructionsStart, endInstructionsEnd]
+
+if doET:
+    et.sendMessage('cgeRDM Recording Stopped')
+    et.sendMessage('post 100 pause')
+    pylink.pumpDelay(100)
+    et.stopRecording()
+    et.closeDataFile()
+    time_str = time.strftime("_%Y_%m_%d_%H_%M_%S", time.localtime())
+    session_identifier = edf_fname + time_str
+    et.receiveDataFile(edf_fname + '.edf', os.path.join('/Users/Display/Desktop/Github/cge/CGE/RawData/' + session_identifier + '.edf'))
+    et.close()
+
+if doET:
+    subprocess.run(["edf2asc.exe", os.path.join('Users/jvonm/Documents/GitHub/edi/ediTasks/day1_rdm_wmc/ediData/ediRDMpupillometry', session_identifier + '.edf')])
+
+
 
 # for data files
 date = time.strftime("%Y%m%d-%H%M%S")
