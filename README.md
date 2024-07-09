@@ -27,3 +27,6 @@ This task is very similar to that used with the ILD project in the SHLab, and in
 
 ## Analysis files for the project (R). 
 R files to analyze the data produced during the task. 
+
+## Qualtrics Survey Day 1
+https://udenver.qualtrics.com/jfe/form/SV_eCAGmyvN58oLZQi
