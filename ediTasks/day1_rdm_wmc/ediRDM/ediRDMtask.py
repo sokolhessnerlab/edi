@@ -994,7 +994,7 @@ for d in range(dynamicSet):
     safe = dynamicRandTrial.safeoption[d]
 
     # Adjusting Trial Start - Python starts at 0: This makes trials start at 1
-    trial = s + 1 
+    trial = d + 1 
 
     # Dynamic Choice Set Specific Data
     choiceP = dynamicRandTrial.choiceP[d]
