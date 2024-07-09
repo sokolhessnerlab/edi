@@ -49,7 +49,7 @@ def edi(subID, isReal, compNum, taskSet, doET): # define the function and specif
         dirName = ("/Users/shlab/Documents/Github/cge/CGE/")
         dataDirName = ("/Users/shlab/Documents/Github/cge/CGE/data")
     elif compNum ==3:
-        dirName = ("/Users/Display/Desktop/GitHub/edi/ediTasks/day1_rdm_wmc/ediRDM")
+        dirName = ("/Users/Display/Desktop/GitHub/edi/ediTasks/day1_rdm_wmc")
         dataDirName = ("/Users/Display/Desktop/GitHub/edi/ediTasks/day1_rdm_wmc/ediData")
     
     os.chdir(dirName)

@@ -63,23 +63,26 @@ def ediRDM(subID, isReal, doET, dirName, dataDirName): # ediMain wrapper functio
     ### CHANGING DIRECTORIES ### 
     
     # change directory to ediRDM folder with all the task-related files
-    print(os.getcwd()) # getting the current directory
-    homeDir = os.path.expanduser('~') # setting to home directory 
-    ediTasksDir = os.path.join("GitHub", "edi", "ediTasks") # getting ediTasks directory
-    if os.path.exists(os.path.join(homeDir, "Desktop", ediTasksDir)): # finding which path exists for edi Day 1
-        ediDay1Dir = os.path.join(homeDir, "Desktop", ediTasksDir, "day1_rdm_wmc")
-    elif os.path.exists(os.path.join(homeDir, "Documents", ediTasksDir)):
-        ediDay1Dir = os.path.join(homeDir, "Documents", ediTasksDir, "day1_rdm_wmc")
-    os.chdir(os.path.join(homeDir, ediDay1Dir, "ediRDM")) # joining the pathways together and then changing the directory to it
-    print(os.getcwd())
-    ediRDMdir = os.getcwd()
-    #dirPath = os.chdir(dirName + os.sep + "ediRDM") # os.sep for mac and windows
+    # print(os.getcwd()) # getting the current directory
+    # homeDir = os.path.expanduser('~') # setting to home directory 
+    # ediTasksDir = os.path.join("GitHub", "edi", "ediTasks") # getting ediTasks directory
+    # if os.path.exists(os.path.join(homeDir, "Desktop", ediTasksDir)): # finding which path exists for edi Day 1
+    #     ediDay1Dir = os.path.join(homeDir, "Desktop", ediTasksDir, "day1_rdm_wmc")
+    # elif os.path.exists(os.path.join(homeDir, "Documents", ediTasksDir)):
+    #     ediDay1Dir = os.path.join(homeDir, "Documents", ediTasksDir, "day1_rdm_wmc")
+    # os.chdir(os.path.join(homeDir, ediDay1Dir, "ediRDM")) # joining the pathways together and then changing the directory to it
+    # print(os.getcwd())
+    # ediRDMdir = os.getcwd()
+    ### for edi Wrapper
+    os.chdir(dirName + os.sep + "ediRDM")
+    dataDirectoryPath = dataDirName + os.sep + "ediData"
+    dirPath = os.chdir(dirName + os.sep + "ediRDMdata") # os.sep for mac and windows
     #dirPath = os.chdir("Desktop" + os.sep + "edi" + os.sep + "ediTasks" + os.sep + "ediRDM") # test run on Von's laptop, tabletas
     
     # set directory for saving ediRDMtask data
-    datadirPath = os.path.join(ediDay1Dir, "ediData")
-    datadirPathbehavioral = os.path.join(datadirPath, "ediRDMbehavioral") 
-    datadirPathpupillometry = os.path.join(datadirPath, "ediRDMpupillometry") 
+    # datadirPath = os.path.join(ediDay1Dir, "ediData")
+    # datadirPathbehavioral = os.path.join(datadirPath, "ediRDMbehavioral") 
+    # datadirPathpupillometry = os.path.join(datadirPath, "ediRDMpupillometry") 
     #datadirPath = dataDirName + os.sep + "ediData"
     #datadirPathbehavioral = dataDirName + os.sep + "ediData" + os.sep + "ediRDMbehavioral"
     #datadirPathpupillometry = dataDirName + os.sep + "ediData" + os.sep + "ediRDMpupillometry"
@@ -1092,9 +1095,9 @@ def ediRDM(subID, isReal, doET, dirName, dataDirName): # ediMain wrapper functio
 
     # saving out data
     ediRDMdf = pd.DataFrame(ediData)
-    ediRDMbehavioralFilename = os.path.join(datadirPathbehavioral, f"edi{subID}_RDM_{date}.csv")
+    #ediRDMbehavioralFilename = os.path.join(datadirPathbehavioral, f"edi{subID}_RDM_{date}.csv")
+    ediRDMbehavioralFilename = dataDirectoryPath + "ediRDMbehavioral" + subID + "_" + date + ".csv"
     ediRDMdf.to_csv(ediRDMbehavioralFilename, header = False, index = False)
-
 
 
 
