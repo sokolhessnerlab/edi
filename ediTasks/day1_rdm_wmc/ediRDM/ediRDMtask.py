@@ -211,7 +211,7 @@ elif isReal == 1:
 #
 ##
 ### COUNTING TRIALS VS. NOT
-isCount = 1 # 1 = yes, count trials vs. 0 = no, don't count trials
+isCount = 0 # 1 = yes, count trials vs. 0 = no, don't count trials
 
 if isCount == 0:
     countLoc = [0, 7]
@@ -584,6 +584,12 @@ def choice_location_randomizing():
     lossTxt.setPos(lossTxtLoc)
     safeTxt.setPos(safeTxtLoc)
 
+# counting trials if set to count trials
+def trial_counting():
+    if isCount == 1:
+        countTrialTxt.setText(trial)
+        countTrialTxt.draw()
+
 # drawing decision window stimuli and retrieving trial start time
 def decision_window_starting():
     global choiceStart
@@ -597,16 +603,11 @@ def decision_window_starting():
     orTxt.draw()
     vTxt.draw()
     nTxt.draw()
+    trial_counting()
     
     win.flip() # show choice options
       
     choiceStart = timer.getTime() # get time 
-
-# counting trials if set to count trials
-def trial_counting():
-    if isCount == 1:
-        countTrialTxt.setText(trial)
-        countTrialTxt.draw()
 
 # recording the choice made and time
 def decision_making():
@@ -770,9 +771,6 @@ for p in range(practiceSet):
     # Start of Trial
     decision_window_starting()
 
-    # Counting Trials if Counting
-    trial_counting()
-
     # Choice Made
     decision_making()
     
@@ -850,9 +848,6 @@ for s in range(staticSet):
 
     # Start of Trial
     decision_window_starting()
-
-    # Counting Trials if Counting
-    trial_counting()
 
     # End Task if Wanted/Needed
     endTask()
@@ -1008,9 +1003,6 @@ for d in range(dynamicSet):
 
     # Start of Trial
     decision_window_starting()
-
-    # Counting Trials if Counting
-    trial_counting()
 
     # End Task if Wanted/Needed
     endTask()
