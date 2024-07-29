@@ -1,37 +1,42 @@
-# CGE Data Processing Script
+# EDI Data Processing Script
 #
-# Script to process the data collected from CGE during Fall 2023 and Winter 2024 in the CGE
-# (Control & Gambling Task with Eyetracking) study.
+# Script to process the data collected from EDI during Summer 2024 and Fall 2024 in the EDI
+# (Effort, Decision-making and Interoception) study.
 
 
 # STEP 1: SET YOUR WORKING DIRECTORY!
 # # On PSH's computers...
-# setwd('/Users/sokolhessner/Documents/gitrepos/cge/');
+# setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
+# # On SF's computers...
+setwd('/Users/sophie/Desktop/GitHub/edi/');
 # # On Von's PC Laptop "tabletas"...
-setwd('C:/Users/jvonm/Documents/GitHub/cge');
+# setwd('C:/Users/jvonm/Documents/GitHub/cge');
 
 
 # STEP 2: then run from here on the same
 config = config::get();
 
-Sys.setenv(R_CONFIG_ACTIVE = 'tabletas');
-
-et_processing_file_name = normalizePath(dir(pattern = glob2rx('cge_et_processing.R'), full.names = T, recursive = T));
-
-# Run the Eye-Tracking Processing Script ###########
-source(et_processing_file_name) # NOTE: This will take a long time!! 
+# et_processing_file_name = normalizePath(dir(pattern = glob2rx('cge_et_processing.R'), full.names = T, recursive = T));
+# 
+# # Run the Eye-Tracking Processing Script ###########
+# source(et_processing_file_name) # NOTE: This will take a long time!! 
 
 # Prepare for the rest of the processing ###########
 setwd(config$path$data$raw);
 
 # List all the data files
-rdmfn = dir(pattern = glob2rx('cgeRDM_*.csv'),full.names = T, recursive = T);
-sspfn = dir(pattern = glob2rx('cgeSYMSPANbothReal_*.csv'), full.names = T, recursive = T);
-ospfn = dir(pattern = glob2rx('cgeOSPANbothReal_*.csv'), full.names = T, recursive = T);
+rdmfn = dir(pattern = glob2rx('edi*RDM*.csv'),full.names = T, recursive = T);
+sspfn = dir(pattern = glob2rx('ediSYMSPANbothReal_*.csv'), full.names = T, recursive = T);
+ospfn = dir(pattern = glob2rx('ediOSPANbothReal_*.csv'), full.names = T, recursive = T);
 qualfn = dir(pattern = glob2rx('*Survey*.csv'), full.names = T, recursive = T);
 
 # Identify the number of participants from the file listing
-number_of_subjects = length(rdmfn);
+subjectIDs = c();
+for (rfn in 1:length(rdmfn)){
+  subjectIDs[rfn] = as.numeric(substr(rdmfn[rfn],6,8))
+}
+
+number_of_subjects = length(subjectIDs);
 
 
 ### Qualtrics CGE Survey Processing ###
@@ -51,21 +56,17 @@ survey_colnames = c(
   'IUS_prospective',
   'IUS_inhibitory',
   'IUS',
-  'NCS',
   'SNS_ability',
   'SNS_preference',
-  'SNS',
-  'PSS'
+  'SNS'
 );
 
 survey_data = array(data = NA, dim = c(number_of_subjects, length(survey_colnames)));
 colnames(survey_data) <- survey_colnames;
 survey_data = as.data.frame(survey_data)
 
-raw_qualtrics_data$EI.1[15] = '007'; # replacing 'CGE007' with the numeric value
-raw_qualtrics_data = raw_qualtrics_data[-3,]; # deleting an early test line
-
-# Add attention check DG.4 - Need to have selected 3
+# raw_qualtrics_data$EI.1[15] = '007'; # replacing 'CGE007' with the numeric value
+# raw_qualtrics_data = raw_qualtrics_data[-3,]; # deleting an early test line
 
 # Make indices to identify which rows to keep!
 ind_complete = raw_qualtrics_data$Finished == 1; # completed the survey
@@ -134,43 +135,6 @@ survey_data$IUS = as.numeric(raw_qualtrics_data$IUS.12_1[ind_overall]) +
                   as.numeric(raw_qualtrics_data$IUS.12_11[ind_overall]) +
                   as.numeric(raw_qualtrics_data$IUS.12_12[ind_overall]);
 
-# NCS-18 Scores (Need for Cognition; Cacioppo et al., 1984): Total (18-450); Reverse score (3, 4, 5, 7, 8, 9, 12, 16, 17); Likert (1 = "Extremely uncharacteristic of me" to 5 = "Extremely characteristic of me")
-NCS_3_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_3[ind_overall]); # _R = reverse scoring the item(s)
-
-NCS_4_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_4[ind_overall]);
-
-NCS_5_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_5[ind_overall]);
-
-NCS_7_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_7[ind_overall]);
-
-NCS_8_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_8[ind_overall]);
-
-NCS_9_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_9[ind_overall]);
-
-NCS_12_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_12[ind_overall]);
-
-NCS_16_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_16[ind_overall]);
-
-NCS_17_R = 6 - as.numeric(raw_qualtrics_data$NCS.18_17[ind_overall]);
-
-survey_data$NCS = as.numeric(raw_qualtrics_data$NCS.18_1[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$NCS.18_2[ind_overall]) +
-                  NCS_3_R +
-                  NCS_4_R +
-                  NCS_5_R +
-                  as.numeric(raw_qualtrics_data$NCS.18_6[ind_overall]) +
-                  NCS_7_R +
-                  NCS_8_R +
-                  NCS_9_R +
-                  as.numeric(raw_qualtrics_data$NCS.18_10[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$NCS.18_11[ind_overall]) +
-                  NCS_12_R +
-                  as.numeric(raw_qualtrics_data$NCS.18_13[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$NCS.18_14[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$NCS.18_15[ind_overall]) +
-                  NCS_16_R +
-                  NCS_17_R +
-                  as.numeric(raw_qualtrics_data$NCS.18_18[ind_overall]);
 
 # SNS Scores (Subjective Numeracy; Fagerlin et al., 2007): Average (Total & Subscales); Reverse score (7); Subscales (Ability: 1-4 & Preference: 5-8); Ability Likert (1 = "Not at all good" to 6 = "Extremely good") & Prefernce Likert (5: 1 = Not at all helpful to 6 = Extremely helpful"; 6: 1 = "Always prefer words" to 6 = "Always prefer numbers"; 7: 1 = "Always prefer percentages" to 6 = "Always prefer words"; 8: 1 = "Never" to 6 = "Very often")
 SNS_7_R = 7 - as.numeric(raw_qualtrics_data$SNS.7.R[ind_overall]);
@@ -199,26 +163,6 @@ SNS_tmpSum = as.numeric(raw_qualtrics_data$SNS.1[ind_overall]) +
              as.numeric(raw_qualtrics_data$SNS.8[ind_overall]);
 
 survey_data$SNS = SNS_tmpSum/8
-
-# PSS Scores (Perceived Stress; Cohen et al., 1983): Total (0 - 40); Reverse score (4, 5, 7, & 8); Likert (0 = "Never" to 4 = "Very Often")
-PSS_4_R = 5 - as.numeric(raw_qualtrics_data$PSS.Matrix_4[ind_overall]);
-
-PSS_5_R = 5 - as.numeric(raw_qualtrics_data$PSS.Matrix_5[ind_overall]);
-
-PSS_7_R = 5 - as.numeric(raw_qualtrics_data$PSS.Matrix_7[ind_overall]);
-
-PSS_8_R = 5 - as.numeric(raw_qualtrics_data$PSS.Matrix_8[ind_overall]);
-
-survey_data$PSS = as.numeric(raw_qualtrics_data$PSS.Matrix_1[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$PSS.Matrix_2[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$PSS.Matrix_3[ind_overall]) +
-                  PSS_4_R +
-                  PSS_5_R +
-                  as.numeric(raw_qualtrics_data$PSS.Matrix_6[ind_overall]) +
-                  PSS_7_R +
-                  PSS_8_R +
-                  as.numeric(raw_qualtrics_data$PSS.Matrix_9[ind_overall]) +
-                  as.numeric(raw_qualtrics_data$PSS.Matrix_10[ind_overall]); 
 
 cat('Done.\n\n')
 
@@ -260,11 +204,9 @@ column_names_dm = c(
   'IUS_prospective',
   'IUS_inhibitory',
   'IUS',
-  'NCS',
   'SNS_ability',
   'SNS_preference',
   'SNS',
-  'PSS'
 );
 
 data_dm = array(data = NA, dim = c(0, length(column_names_dm)));
@@ -290,31 +232,46 @@ complexSpanScores$subjectnumber= 1:number_of_subjects
 
 # Loop
 for(s in 1:number_of_subjects){
+  sub_id = subjectIDs[s]
+  ### OSPAN DATA ###
   
-  ### OSPAN DATA ### 
-  
-  ospantmpdata = read.csv(ospfn[s]);
-  ospantmpdata$subid = as.integer(substr(ospfn[s],6,8));
-  
-  
-  if (any(ospantmpdata$percentCorrectMath[is.finite(ospantmpdata$percentCorrectMath)]<85)){
-    ospanExclude = c(ospanExclude,ospantmpdata$subid[1]);
-    complexSpanExclude$ospanExclude[s] = 1;
+  osp_ind = which(grepl(sprintf('edi%03i',sub_id),ospfn))
+  if (length(osp_ind) == 1){
+    
+    ospantmpdata = read.csv(ospfn[osp_ind]);
+    ospantmpdata$subid = as.integer(substr(ospfn[osp_ind],6,8));
+    
+    
+    if (any(ospantmpdata$percentCorrectMath[is.finite(ospantmpdata$percentCorrectMath)]<85)){
+      ospanExclude = c(ospanExclude,ospantmpdata$subid[1]);
+      complexSpanExclude$ospanExclude[s] = 1;
+    } else {
+      correctIndospan = which(ospantmpdata$correctCount == ospantmpdata$setSize)
+      complexSpanScores$ospanScore[s] = sum(ospantmpdata$correctCount[correctIndospan])/number_of_ospan_trials_per_person;
+    }
   } else {
-    correctIndospan = which(ospantmpdata$correctCount == ospantmpdata$setSize)
-    complexSpanScores$ospanScore[s] = sum(ospantmpdata$correctCount[correctIndospan])/number_of_ospan_trials_per_person;
+    ospanExclude = c(ospanExclude,sub_id);
+    complexSpanExclude$ospanExclude[s] = 1;
   }
   
   ### SYMSPAN DATA ###
-  sspantmpdata = read.csv(sspfn[s]);
-  sspantmpdata$subid = as.integer(substr(sspfn[s],6,8));
+  ssp_ind = which(grepl(sprintf('edi%03i',sub_id),sspfn))
   
-  if (any(sspantmpdata$percentCorrectSym[is.finite(sspantmpdata$percentCorrectSym)]<85)){
-    sspanExclude = c(sspanExclude,sspantmpdata$subid[1]);
-    complexSpanExclude$symspanExclude[s] = 1;
+  if (length(ssp_ind) == 1){
+    
+    sspantmpdata = read.csv(sspfn[ssp_ind]);
+    sspantmpdata$subid = as.integer(substr(sspfn[ssp_ind],6,8));
+    
+    if (any(sspantmpdata$percentCorrectSym[is.finite(sspantmpdata$percentCorrectSym)]<85)){
+      sspanExclude = c(sspanExclude,sspantmpdata$subid[1]);
+      complexSpanExclude$symspanExclude[s] = 1;
+    } else {
+      correctIndsymspan = which(sspantmpdata$squareCorrectCount == sspantmpdata$setSize)
+      complexSpanScores$symspanScore[s] = sum(sspantmpdata$squareCorrectCount[correctIndsymspan])/number_of_sspan_trials_per_person;
+    }
   } else {
-    correctIndsymspan = which(sspantmpdata$squareCorrectCount == sspantmpdata$setSize)
-    complexSpanScores$symspanScore[s] = sum(sspantmpdata$squareCorrectCount[correctIndsymspan])/number_of_sspan_trials_per_person;
+    sspanExclude = c(sspanExclude,sub_id);
+    complexSpanExclude$symspanExclude[s] = 1;
   }
   
   
@@ -402,17 +359,11 @@ for(s in 1:number_of_subjects){
   
   dm_data_to_add[,27] = survey_data$IUS[s];
   
-  dm_data_to_add[,28] = survey_data$NCS[s];
+  dm_data_to_add[,28] = survey_data$SNS_ability[s];
   
-  dm_data_to_add[,29] = survey_data$SNS_ability[s];
+  dm_data_to_add[,29] = survey_data$SNS_preference[s];
   
-  dm_data_to_add[,30] = survey_data$SNS_preference[s];
-  
-  dm_data_to_add[,31] = survey_data$SNS[s];
-  
-  dm_data_to_add[,32] = survey_data$PSS[s];
-  
-  
+  dm_data_to_add[,30] = survey_data$SNS[s];
 
   # Add this person's DM data to the total DM data.
   data_dm = rbind(data_dm,dm_data_to_add);
@@ -428,11 +379,11 @@ cat('Done.\n')
 cat('Saving out data... ')
 setwd(config$path$data$processed);
 
-write.csv(data_dm, file=sprintf('cge_processed_decisionmaking_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
+write.csv(data_dm, file=sprintf('edi_processed_decisionmaking_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
           row.names = F);
-write.csv(complexSpanScores, file=sprintf('cge_processed_complexspan_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
+write.csv(complexSpanScores, file=sprintf('edi_processed_complexspan_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
           row.names = F);
-write.csv(survey_data, file=sprintf('cge_processed_survey_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
+write.csv(survey_data, file=sprintf('edi_processed_survey_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
           row.names = F);
 
 cat('Done.\n\nAll data has been processed.\n\n')
