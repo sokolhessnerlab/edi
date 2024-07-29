@@ -12,4 +12,14 @@
 #   https://cran.r-project.org/web/packages/config/vignettes/introduction.html.
 default:
   path:
-    data: "~/data"
+    data: 
+      main: "/Volumes/shlab/Projects/EDI/data/"
+      raw: "/Volumes/shlab/Projects/EDI/data/raw/"
+      processed: "/Volumes/shlab/Projects/EDI/data/preprocessed/"
+
+tabletas:
+  path:
+    data:
+      main: "S:/shlab/Projects/EDI/data"
+      raw: "S:/shlab/Projects/EDI/data/raw"
+      processed: "S:/shlab/Projects/EDI/data/preprocessed"
