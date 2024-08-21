@@ -28,7 +28,7 @@ setwd(config$path$data$raw);
 rdmfn = dir(pattern = glob2rx('edi*RDM*.csv'),full.names = T, recursive = T);
 sspfn = dir(pattern = glob2rx('ediSYMSPANbothReal_*.csv'), full.names = T, recursive = T);
 ospfn = dir(pattern = glob2rx('ediOSPANbothReal_*.csv'), full.names = T, recursive = T);
-qualfn = dir(pattern = glob2rx('*Survey*.csv'), full.names = T, recursive = T);
+qualfn = dir(pattern = glob2rx('Qualtrics*.csv'), full.names = T, recursive = T);
 
 # Identify the number of participants from the file listing
 subjectIDs = c();
@@ -90,13 +90,13 @@ survey_data$age = as.numeric(raw_qualtrics_data$DG.1[ind_overall])
 plot(survey_data$age)
 
 # Gender of participants (1 = Man; 2 = Woman; 3 = Non-binary; 4 = Genderqueer; 5 = Gender expansive; 6 = Two-spirited; 7 = 3rd Gender; 8 = Agender; 9 = Not sure; 10 = Other(text); 11 = Prefer not to say)
-
+survey_data$gender = as.numeric(raw_qualtrics_data$DG.2[ind_overall])
 
 # Ethnicity of participants (1 = Hispanic/Latinx; 2 = Not Hispanic/Latinx; 3 = Prefer not to say)
 survey_data$ethnicity = as.numeric(raw_qualtrics_data$DG.3[ind_overall])
 
 # Race of participants (1 = American Indian/Alaska Native; 2 = Black/African-American; 3 = East Asian; 4 = Native Hawaiian/Pacific Islander; 5 = South Asian; 6 = White; 7 = Bi-/Multi-racial (text); 8 = Other (text); 9 = Prefer not to say)
-
+survey_data$race = as.numeric(raw_qualtrics_data$DG.5[ind_overall])
 
 # Education level of participants (1 = No school; 2 = to 8th grade; 3 = Some HS, no diploma; 4 = HS/GED; 5 = Trade school; 6 = AA/S; 7 = BA/S; 8 = MA/S; 9 = Professional degree; 10 = PhD)
 survey_data$education = as.numeric(raw_qualtrics_data$DG.6[ind_overall])
