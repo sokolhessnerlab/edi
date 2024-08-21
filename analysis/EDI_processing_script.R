@@ -39,7 +39,7 @@ for (rfn in 1:length(rdmfn)){
 number_of_subjects = length(subjectIDs);
 
 
-### Qualtrics CGE Survey Processing ###
+### Qualtrics EDI Survey Processing ###
 cat('Processing Survey data...\n')
 
 raw_qualtrics_data = read.csv(qualfn[(length(qualfn))]); # Load the last Qualtrics file, assuming naming convention sorts the files so that last is most recent!
