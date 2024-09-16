@@ -44,6 +44,8 @@ rtmtx = nan(nS,160);
 pcorrHalf = nan(nS,2); % p(correct) by half
 bTime = nan(nS,2); % beta and p-value for linear effect of time on accuracy
 
+manually_entered_data = readtable([raw_data_path 'EDI_Post_Study_Questionnaire_Quant.xlsx']);
+
 countdata = nan(6,3,nS); % trials by details (time, nHB, reported count) by subj
 % repcounts = xlsread('ILD_CountEstimates.xlsx')';
 % repcounts = repcounts(2:end,:);
@@ -117,20 +119,18 @@ for s = 1:nS
 %         M_dprime(s) = out.meta_da; % meta-dprime itself
 %     end
     
-%     if isfield(output,'count')
-%         try
-%             countdata(:,1,s) = output.count.nHBs(:,2); % put in the trial lengths
-%             countdata(:,2,s) = output.count.nHBs(:,1); % put in the actual HBs
+    if isfield(output,'count')
+        try
+            countdata(:,1,s) = output.count.nHBs(:,2); % put in the trial lengths
+            countdata(:,2,s) = output.count.nHBs(:,1); % put in the actual HBs
 %             countdata(:,3,s) = repcounts(repcounts(:,1)==str2num(subjIDs{s}(4:6)),2:end)'; % put in their reported counts
-%             if s == 11
-%                 countdata(:,:,s) = NaN; % ILD014 had something wrong with their EKG - recorded 0, 0, 0, 3, 3, and 5 heartbeats during their intervals. Data is useless.
-%             end
-%             countacc(:,s) = 1-abs(countdata(:,2,s)-countdata(:,3,s))./((countdata(:,2,s)+countdata(:,3,s))/2);
-%             countaccM(s) = mean(countacc(:,s));
-%             counterr(:,s) = countdata(:,2,s) - countdata(:,3,s); % Observed - Reported
-%             counterrM(s) = mean(counterr(:,s));
-%         end
-%     end
+            countdata(:,3,s) = table2array(manually_entered_data(s,{'HBTrial1', 'HBTrial2', 'HBTrial3', 'HBTrial4', 'HBTrial5', 'HBTrial6'})); % put in their reported counts
+            countacc(:,s) = 1-abs(countdata(:,2,s)-countdata(:,3,s))./((countdata(:,2,s)+countdata(:,3,s))/2);
+            countaccM(s) = mean(countacc(:,s));
+            counterr(:,s) = countdata(:,2,s) - countdata(:,3,s); % Observed - Reported
+            counterrM(s) = mean(counterr(:,s));
+        end
+    end
 end
 
 
