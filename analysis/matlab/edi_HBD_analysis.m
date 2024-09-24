@@ -334,14 +334,8 @@ delete(pp)
 
 save([proc_data_path 'edi_analysis_01-JAGSfitobj.mat'],'fit_all','fit_good');
 
-% load('ild_analysis_01-JAGSfitobj.mat');
-% load('ild_analysis_02-JAGSfitobj.mat');
-
-% fit_all and fit_good have similar M-ratio output.
 
 
-
-cd(datapath);
 
 output = table(cell2mat(subjIDs),pcorr,missedTs,btrChance,pcorrHalf,...
     meanjudg,meanconf,pcorrLC,pcorrHC,confWrong,confRight,...
@@ -354,5 +348,5 @@ output = table(cell2mat(subjIDs),pcorr,missedTs,btrChance,pcorrHalf,...
     'dprime','metadprimeBayesian','MRatioBayesian',...
     'CountAccuracy','CountError','AbsCountError'});
 
-writetable(output,[proc_data_path 'EDI_taskperformance_output.csv'])
+writetable(output,[proc_data_path 'EDI_HBD_taskperformance_output.csv'])
 
