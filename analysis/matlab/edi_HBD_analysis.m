@@ -3,6 +3,7 @@
 % 
 
 base_github_path = '/Users/sokolhessner/Documents/gitrepos/edi/';
+hmm_github_path = [base_github_path 'analysis/matlab/HMeta-d-master/'];
 base_data_path = '/Volumes/shlab/Projects/EDI/data/';
 raw_data_path = [base_data_path 'raw/'];
 
@@ -303,17 +304,12 @@ xlabel('Mean Accuracy Score')
 ylabel('Mean number of heartbeats')
 [r,p] = corr(countaccM,squeeze(mean(countdata(:,2,:))),'rows','pairwise','type','spearman');
 title(sprintf('Spearman''s Rho r = %.2f, p = %.2f',r,p))
-% ... while the accuracy score is weakly correlated with the # of HBs, p =
-% 0.02
 
 
 
-% Ran a few quick correlations; count accuracy is correlated with
-% interoceptive performance! Not SUPER strong, p = 0.03 or so, r = 0.29,
-% but it shows up with abs(counterrM) and countaccM. 
 
 
-cd ../HMeta-d-master;
+cd(hmm_github_path)
 
 %%% Set some parameters
 mcmc_params.doparallel = 0;
@@ -323,8 +319,8 @@ mcmc_params.nchains = 4;
 mcmc_params.response_conditional = 0;   % response-conditional meta-d?
 mcmc_params.estimate_dprime = 0;    % also estimate dprime in same model?
 % mcmc_params.nchains = 3; % How Many Chains?
-mcmc_params.nburnin = 1000; % How Many Burn-in Samples?
-mcmc_params.nsamples = 10000;  %How Many Recorded Samples?
+mcmc_params.nburnin = 100; % How Many Burn-in Samples?
+mcmc_params.nsamples = 500;  %How Many Recorded Samples?
 mcmc_params.nthin = 1; % How Often is a Sample Recorded?
 % mcmc_params.doparallel = 0; % Parallel Option
 mcmc_params.dic = 1;
@@ -337,22 +333,11 @@ fit_good = fit_meta_d_mcmc_group(nR_S1(keepind),nR_S2(keepind),mcmc_params);
 
 save('edi_analysis_01-JAGSfitobj.mat','fit_all','fit_good');
 save('edi_analysis_02-JAGSfitobj.mat','fit_all','fit_good');
-% 
+
 % load('ild_analysis_01-JAGSfitobj.mat');
 % load('ild_analysis_02-JAGSfitobj.mat');
 
 % fit_all and fit_good have similar M-ratio output.
-
-
-participant_demos = readtable('ILDData.xlsx','Sheet','forMatlab');
-
-[r,p] = corr(dprime,participant_demos.BMI) % no relationship (pearson or spearman)
-[r,p] = corr(dprime,participant_demos.age) % no relationship (pearson or spearman)
-
-[h,p,ci,stats] = ttest2(dprime(participant_demos.genderf1m0 == 1), ...
-    dprime(participant_demos.genderf1m0 == 0)) 
-% trend: p = 0.057; Wilcoxon rank-sum p = 0.08
-
 
 
 
@@ -367,17 +352,3 @@ output = table(cell2mat(subjIDs),pcorr,btrChance,pcorrHalf,meanconf,...
 
 writetable(output,'ILD_taskperformance_output.csv')
 
-
-
-
-regoutput = [table(TATLdata(:,1)) output(tatlind,:) table(ovacc,fofacc,pleacc,keepSCL,keepPPG,...
-    TL_FOF_PPG_diff,TL_P_PPG_diff,TL_FOF_SCL_diff,TL_P_SCL_diff)];
-
-writetable(regoutput,'ILD_forregression_output.csv')
-
-
-
-
-
-% Predicting accuracy in lie detection with mix of physio during lie
-% detection and interoception
