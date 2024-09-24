@@ -312,27 +312,26 @@ title(sprintf('Spearman''s Rho r = %.2f, p = %.2f',r,p))
 cd(hmm_github_path)
 
 %%% Set some parameters
-mcmc_params.doparallel = 0;
+mcmc_params.doparallel = 1;
 mcmc_params.nchains = 4;
 
 %%% defaults
 mcmc_params.response_conditional = 0;   % response-conditional meta-d?
 mcmc_params.estimate_dprime = 0;    % also estimate dprime in same model?
 % mcmc_params.nchains = 3; % How Many Chains?
-mcmc_params.nburnin = 100; % How Many Burn-in Samples?
-mcmc_params.nsamples = 500;  %How Many Recorded Samples?
+mcmc_params.nburnin = 1000; % How Many Burn-in Samples?
+mcmc_params.nsamples = 20000;  %How Many Recorded Samples?
 mcmc_params.nthin = 1; % How Often is a Sample Recorded?
 % mcmc_params.doparallel = 0; % Parallel Option
 mcmc_params.dic = 1;
 
 %%% Run it
-% % pp = parpool(mcmc_params.nchains);
+pp = parpool(mcmc_params.nchains);
 fit_all = fit_meta_d_mcmc_group(nR_S1,nR_S2,mcmc_params);
 fit_good = fit_meta_d_mcmc_group(nR_S1(keepind),nR_S2(keepind),mcmc_params);
-% % delete(pp)
+delete(pp)
 
 save('edi_analysis_01-JAGSfitobj.mat','fit_all','fit_good');
-save('edi_analysis_02-JAGSfitobj.mat','fit_all','fit_good');
 
 % load('ild_analysis_01-JAGSfitobj.mat');
 % load('ild_analysis_02-JAGSfitobj.mat');
