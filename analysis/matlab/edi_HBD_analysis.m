@@ -5,6 +5,7 @@
 base_github_path = '/Users/sokolhessner/Documents/gitrepos/edi/';
 hmm_github_path = [base_github_path 'analysis/matlab/HMeta-d-master/'];
 base_data_path = '/Volumes/shlab/Projects/EDI/data/';
+proc_data_path = [base_data_path 'processed/'];
 raw_data_path = [base_data_path 'raw/'];
 
 fnames = dir([raw_data_path '/*/ediTask_EDI*.mat']);
@@ -112,13 +113,13 @@ for s = 1:nS
     
     [nR_S1{s},nR_S2{s}] = trials2counts(syncState,choice,qrating,nQ);
     
-%     try
-%         out = type2_SDT_MLE(syncState,choice,qrating,nQ,[],1); % assume equal variance
-%         
-%         M_ratio(s) = out.M_ratio; % meta-d'/d' (1 is optimal; expect ? 1)
-%         M_diff(s) = out.M_diff; % meta-d' - d'
-%         M_dprime(s) = out.meta_da; % meta-dprime itself
-%     end
+    try
+        out = type2_SDT_MLE(syncState,choice,qrating,nQ,[],1); % assume equal variance
+        
+        M_ratio(s) = out.M_ratio; % meta-d'/d' (1 is optimal; expect ? 1)
+        M_diff(s) = out.M_diff; % meta-d' - d'
+        M_dprime(s) = out.meta_da; % meta-dprime itself
+    end
     
     if isfield(output,'count')
         try
@@ -331,7 +332,7 @@ fit_all = fit_meta_d_mcmc_group(nR_S1,nR_S2,mcmc_params);
 fit_good = fit_meta_d_mcmc_group(nR_S1(keepind),nR_S2(keepind),mcmc_params);
 delete(pp)
 
-save('edi_analysis_01-JAGSfitobj.mat','fit_all','fit_good');
+save([proc_data_path 'edi_analysis_01-JAGSfitobj.mat'],'fit_all','fit_good');
 
 % load('ild_analysis_01-JAGSfitobj.mat');
 % load('ild_analysis_02-JAGSfitobj.mat');
@@ -342,12 +343,16 @@ save('edi_analysis_01-JAGSfitobj.mat','fit_all','fit_good');
 
 cd(datapath);
 
-output = table(cell2mat(subjIDs),pcorr,btrChance,pcorrHalf,meanconf,...
-    dprime,M_dprime,M_ratio,fit_all.meta_d',fit_all.Mratio',...
+output = table(cell2mat(subjIDs),pcorr,missedTs,btrChance,pcorrHalf,...
+    meanjudg,meanconf,pcorrLC,pcorrHC,confWrong,confRight,...
+    M_dprime,M_ratio,...
+    dprime,fit_all.meta_d',fit_all.Mratio',...
     countaccM,counterrM,abs(counterrM),...
-    'VariableNames',{'SubjectID','pcorrect','pbetterthanchance','pcorrectbyhalf',...
-    'MeanConfidence','dprime','metadprimeMLE','MRatioMLE','metadprimeBayesian','MRatioBayesian',...
+    'VariableNames',{'SubjectID','pcorrect','missedTrials','pbetterthanchance','pcorrectbyhalf',...
+    'MeanJudgment','MeanConfidence','pcorrectLowConf','pcorrectHighConf','confWrong','confRight'...
+    'metadprimeMLE','MratioMLE',...
+    'dprime','metadprimeBayesian','MRatioBayesian',...
     'CountAccuracy','CountError','AbsCountError'});
 
-writetable(output,'ILD_taskperformance_output.csv')
+writetable(output,[proc_data_path 'EDI_taskperformance_output.csv'])
 
