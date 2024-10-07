@@ -375,6 +375,19 @@ data_dm = as.data.frame(data_dm) # make it a data frame so it plays nice
 
 cat('Done.\n')
 
+#STAI SCORING
+# library(readxl)  # For reading Excel files
+
+stai_data <- read.csv(paste0(config$path$data$raw, 'EDI_Post_Study_Questionnaire_Quant_HandEnteredData.csv'))
+# file.exists("EDI_Post_Study_Questionnaire_Quant - HandEnteredData")
+
+
+head(stai_data)
+str(stai_data)
+summary(stai_data)
+
+
+
 # save out CSVs with the clean, compiled data!
 cat('Saving out data... ')
 setwd(config$path$data$processed);
