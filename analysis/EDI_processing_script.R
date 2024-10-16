@@ -379,7 +379,7 @@ cat('Done.\n')
 #working with data from Post Study Questionnaires (Day 1 and Day 2), HB Counting Task, and STAI)
 # library(readxl)  # For reading Excel files
 
-setwd('/Users/sophie/Desktop/GitHub/edi/');
+setwd('/Users/sophie/Desktop/GitHub/edi/');  
 config = config::get()
 setwd(config$path$data$raw)
 hand_entered_data <- read.csv(paste0(config$path$data$raw, 'EDI_Post_Study_Questionnaire_Quant_HandEnteredData.csv'))
