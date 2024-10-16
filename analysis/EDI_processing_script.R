@@ -382,7 +382,6 @@ cat('Done.\n')
 setwd('/Users/sophie/Desktop/GitHub/edi/');
 config = config::get()
 setwd(config$path$data$raw)
-x = read.csv(paste0(config$path$data$raw, 'EDI_Post_Study_Questionnaire_Quant_HandEnteredData.csv'))
 hand_entered_data <- read.csv(paste0(config$path$data$raw, 'EDI_Post_Study_Questionnaire_Quant_HandEnteredData.csv'))
 
 head(hand_entered_data)
@@ -391,32 +390,48 @@ summary(hand_entered_data)
 
 #STAI Scoring
 #Scoring the trait anxiety survey that was administered during EDI Day 2.
-STAI_data <- hand_entered_data[, c("STAI1", "STAI2", "STAI3", "STAI4","STAI5", "STAI6", "STAI7", "STAI8","STAI9", "STAI10", "STAI11", "STAI12","STAI13", "STAI14", "STAI15", "STAI16","STAI17", "STAI18", "STAI19", "STAI20")]
+STAI_col_names = c("STAI1", "STAI2", "STAI3", "STAI4","STAI5", "STAI6", "STAI7", "STAI8","STAI9", "STAI10", "STAI11", "STAI12","STAI13", "STAI14", "STAI15", "STAI16","STAI17", "STAI18", "STAI19", "STAI20");
+STAI_data <- hand_entered_data[, STAI_col_names]
 summary(STAI_data)
 #Coding Reverse Scored Items using multiple iterations of a 'for loop' for survey items 1, 3, 6, 7, 10, 14, 16, and 19.
 reversed_STAI <- c(1, 3, 6, 7, 10, 14, 16, 19)
 #now loop over each item creating a reverse scored variable. Paste0 function creates new variable names for items that were reverse scored. 
-for (i in reversed_STAI) {
-  hand_entered_data[[paste0("STAI", i, "R")]] <- 3 - hand_entered_data[[paste0("STAI", i)]]
-}
+# for (i in reversed_STAI) {
+#   STAI_data[,paste0("STAI", i, "R")] <- 3 - hand_entered_data[,paste0("STAI", i)]
+# }
 
 #creating new dataset that includes reversed scored columns in the place of their old ones. (ex: STAI3R replaces STAI3) 
-original_STAI <- c(2, 4, 5, 8, 9, 11, 12, 13, 15, 17, 18, 20)
-reverse_scored_STAI <- paste0("STAI", reversed_STAI, "R")
-#STAI_rcoded_data <- c(paste0("STAI", original_STAI), reverse_scored_STAI) #this line was trash and caused errors.
-STAI_rcoded_data <- hand_entered_data[, c(paste0("STAI", original_STAI), reverse_scored_STAI)]
+forward_STAI <- c(2, 4, 5, 8, 9, 11, 12, 13, 15, 17, 18, 20) # nice to do this programmatically (i.e. to the exclusion of the reverse-coded items)
+# forward_STAI = 1:20
+# forward_STAI = forward_STAI[!(forward_STAI %in% reversed_STAI)]
 
-#creating sum row to show participant total scores for Trait Anxiety
-STAI_rcoded_data$Total_STAI_Score <- rowSums(STAI_rcoded_data)
-print(STAI_rcoded_data$Total_STAI_Score)
+# new_STAI_data = STAI_data[,-reversed_STAI] # this would delete columns that subsequently got reversed
+
+# reverse_scored_STAI <- paste0("STAI", reversed_STAI, "R")
+# #STAI_rcoded_data <- c(paste0("STAI", original_STAI), reverse_scored_STAI) #this line was trash and caused errors.
+# STAI_rcoded_data <- hand_entered_data[, c(paste0("STAI", original_STAI), reverse_scored_STAI)]
+# 
+# #creating sum row to show participant total scores for Trait Anxiety
+# STAI_rcoded_data$Total_STAI_Score <- rowSums(STAI_rcoded_data)
+# print(STAI_rcoded_data$Total_STAI_Score)
+
+tmp_STAI_score = rowSums(cbind(STAI_data[,forward_STAI], (3-STAI_data[,reversed_STAI])));
+
+
+# TO DO: 
+#  1. Move up to immediately at end of other survey measure calculations
+#  2. Put STAIT in survey_data object and integrate it with data_dm and complexSpanScores
+
+
 
 #creating a histogram to display trait anxiety data. 
-hist(STAI_rcoded_data$Total_STAI_Score,
+hist(tmp_STAI_score,
      main = "Histogram of Trait Anxiety Scores",
      xlab = "Total Trait Anxiety Score", 
      ylab = "Frequency", 
      col = "blue", 
-     border = "black")
+     border = "black",
+     xlim = c(0,60), breaks = 8)
 
 # save out CSVs with the clean, compiled data!
 cat('Saving out data... ')
