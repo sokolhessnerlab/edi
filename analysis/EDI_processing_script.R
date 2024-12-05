@@ -206,7 +206,7 @@ column_names_dm = c(
   'IUS',
   'SNS_ability',
   'SNS_preference',
-  'SNS',
+  'SNS'
 );
 
 data_dm = array(data = NA, dim = c(0, length(column_names_dm)));
@@ -293,34 +293,34 @@ for(s in 1:number_of_subjects){
   # DECISION-MAKING DATA
   dm_data_to_add = array(data = NA, dim = c(number_of_dm_trials_per_person,length(column_names_dm)));
 
-  dm_index_static = is.finite(tmpdata$staticTrials.thisTrialN);
-  dm_index_dynamic = is.finite(tmpdata$dynamicTrials.thisTrialN);
+  dm_index_static = is.finite(tmpdata$checkTrial);
+  dm_index_dynamic = is.finite(tmpdata$easy0difficult1);
 
-  tmp_trialnum = c(tmpdata$staticTrials.thisTrialN[dm_index_static] + 1,
-                   tmpdata$dynamicTrials.thisTrialN[dm_index_dynamic] + num_static_trials + 1);
+  tmp_trialnum = c(tmpdata$trialNumber[dm_index_static],
+                   tmpdata$trialNumber[dm_index_dynamic] + num_static_trials);
 
   dm_data_to_add[,1] = tmp_trialnum; # trial number
   dm_data_to_add[,2] = s; # subject number
 
-  tmp_riskyopt1 = c(tmpdata$riskyoption1[dm_index_static],
-                    tmpdata$riskyoption1[dm_index_dynamic]);
-  tmp_riskyopt2 = c(tmpdata$riskyoption2[dm_index_static],
-                    tmpdata$riskyoption2[dm_index_dynamic]);
-  tmp_safe = c(tmpdata$safeoption[dm_index_static],
-               tmpdata$safeoption[dm_index_dynamic]);
+  tmp_riskyopt1 = c(tmpdata$gainValue[dm_index_static],
+                    tmpdata$gainValue[dm_index_dynamic]);
+  tmp_riskyopt2 = c(tmpdata$lossValue[dm_index_static],
+                    tmpdata$lossValue[dm_index_dynamic]);
+  tmp_safe = c(tmpdata$safeValue[dm_index_static],
+               tmpdata$safeValue[dm_index_dynamic]);
 
   dm_data_to_add[,3:5] = cbind(tmp_riskyopt1,tmp_riskyopt2,tmp_safe) # dollar amounts
 
-  dm_data_to_add[,6] = c(tmpdata$choices[dm_index_static],
-                         tmpdata$choices[dm_index_dynamic]); # choices
+  dm_data_to_add[,6] = c(tmpdata$choiceMade[dm_index_static],
+                         tmpdata$choiceMade[dm_index_dynamic]); # choices
 
-  dm_data_to_add[,7] = c(tmpdata$realChoiceResp.rt[dm_index_static],
-                         tmpdata$realChoiceResp.rt[dm_index_dynamic]); # RTs
+  dm_data_to_add[,7] = c(tmpdata$choiceEnd[dm_index_static]-tmpdata$choiceStart[dm_index_static],
+                         tmpdata$choiceEnd[dm_index_dynamic]-tmpdata$choiceStart[dm_index_dynamic]); # RTs
 
-  dm_data_to_add[,8] = c(tmpdata$outcomes[dm_index_static],
-                         tmpdata$outcomes[dm_index_dynamic]); # outcomes
+  dm_data_to_add[,8] = c(tmpdata$outcomeValue[dm_index_static],
+                         tmpdata$outcomeValue[dm_index_dynamic]); # outcomes
 
-  dm_data_to_add[,9] = c(tmpdata$ischecktrial[dm_index_static],
+  dm_data_to_add[,9] = c(tmpdata$checkTrial[dm_index_static],
                          array(data = 0, dim = c(1,num_dynamic_trials))); # is check trial
 
   dm_data_to_add[,10] = c(array(data = 0, dim = c(1,num_static_trials)),
@@ -330,7 +330,7 @@ for(s in 1:number_of_subjects){
                           tmpdata$easy0difficult1[dm_index_dynamic]*-2 + 1); # easy +1, difficult -1
 
   dm_data_to_add[,12] = c(array(data = NA, dim = c(1,num_static_trials)),
-                          tmpdata$choiceP[dm_index_dynamic]); # choice probability on easy/diff dynamic trials
+                          tmpdata$choiceProbability[dm_index_dynamic]); # choice probability on easy/diff dynamic trials
 
   dm_data_to_add[,13] = tmpdata$bestRho[is.finite(tmpdata$bestRho)];
   dm_data_to_add[,14] = tmpdata$bestMu[is.finite(tmpdata$bestMu)];
