@@ -16,10 +16,10 @@ setwd('/Users/sophie/Desktop/GitHub/edi/');
 # STEP 2: then run from here on the same
 config = config::get();
 
-# et_processing_file_name = normalizePath(dir(pattern = glob2rx('cge_et_processing.R'), full.names = T, recursive = T));
-# 
-# # Run the Eye-Tracking Processing Script ###########
-# source(et_processing_file_name) # NOTE: This will take a long time!! 
+et_processing_file_name = normalizePath(dir(pattern = glob2rx('edi_et_processing.R'), full.names = T, recursive = T));
+
+# Run the Eye-Tracking Processing Script ###########
+source(et_processing_file_name) # NOTE: This will take a long time!!
 
 # Prepare for the rest of the processing ###########
 setwd(config$path$data$raw);
