@@ -105,15 +105,94 @@ colnames(data_pupil) <- c(et_summary_data_column_names, timestamp_column_names);
 
 #### STEP 5: SUBJECT LOOP ####
 for (s in 1:number_of_subjects){
-
+# for (s in 1:4){
+    
   # tic() # for timing this process
   # s = 4; # for debugging
 
-  cat(sprintf('Starting subject CGE%03i.\n',subject_IDs[s]))
+  ##### Loading Data #####
+  cat(sprintf('Starting subject EDI%03i.\n',subject_IDs[s]))
   cat('Loading ET data...  ')
   raw_et_data = read.asc(etfn[s], samples = T, events = F)
   cat('Done.\n')
-
+  
+  cat('Loading behavioral data...  ')
+  ###### 1. Create Behavioral Event Timestamp Matrix ######
+  tmpdata = read.csv(rdmfn[s]);
+  
+  event_timestamps = array(data = NA, dim = c(number_of_trials, length(timestamp_column_names)))
+  colnames(event_timestamps) <- timestamp_column_names;
+  event_timestamps = as.data.frame(event_timestamps)
+  
+  beh_alignment_time = tmpdata$instructionStart[2]; # CHECK THIS
+  
+  trial_index = is.finite(tmpdata$checkTrial) | is.finite(tmpdata$easy0difficult1);
+  
+  event_timestamps$decision_start = tmpdata$choiceStart[trial_index];
+  event_timestamps$decision_end = tmpdata$choiceEnd[trial_index];
+  event_timestamps$outcome_start = tmpdata$outcomeStart[trial_index];
+  event_timestamps$outcome_end = tmpdata$outcomeEnd[trial_index];
+  event_timestamps$iti_end = tmpdata$itiEnd[trial_index];
+  
+  event_timestamps[!(is.finite(tmpdata$choiceMade[trial_index])),] = NA;
+  
+  event_timestamps = event_timestamps - beh_alignment_time; # align the behavioral data to the same moment
+  event_timestamps = event_timestamps * 1000; # into milliseconds, like eyetracking
+  cat('Done.\n')
+  
+  
+  ###### 2. Identify and extract timestamp for practice start from ET file ######
+  cat('Aligning timestamps...  ')
+  et_file_connection = file(etfn[s],'r') # open the file connection to the ASC file.
+  
+  msgs = ''; # where we'll store messages
+  number_of_messages = 0; # set our counter
+  
+  while ( TRUE ) {
+    line = readLines(et_file_connection, n = 1) # read a line of the file
+    if ( length(line) == 0 ) { # if we have read the full file and there are no more lines left, stop
+      break
+    }
+    # print(line) # for debugging
+    if ('MSG' == substr(line, 1, 3)) { # if this is a 'message' line...
+      number_of_messages = number_of_messages + 1; # increment the # of messages we've found
+      # print(line) # for debugging
+      msgs[number_of_messages] = line; # store the message
+    }
+  }
+  
+  close(et_file_connection) # close the file connection
+  
+  for (m in 1:number_of_messages){
+    if ('Practice Instructions Shown' == substr(msgs[m], nchar(msgs[m])-26, nchar(msgs[m]))){ # identify the msg with this text
+      first_ind = 5; # the first digit is always 5 characters in
+      last_ind = nchar(msgs[m])-68; # the "practice text shown" is always 18 characters long, preceded by a 1 char space; so last number is 20 back from end
+      et_alignment_time = as.numeric(substr(msgs[m], first_ind, last_ind)) # pull out the start time from that msg
+    }
+  }
+  
+  ####### 3. Identify and extract Validation Information/metrics from ET file #######
+  val_msgs = grep('VALIDATION HV', msgs);
+  last_val_msg = msgs[val_msgs[length(val_msgs)]];
+  
+  validation_average_error = as.numeric(substr(sub(".*ERROR ","",last_val_msg),1,5));
+  val_msg_subset = sub(" max.*","",last_val_msg);
+  validation_max_error = as.numeric(substr(val_msg_subset, nchar(val_msg_subset)-4, nchar(val_msg_subset)))
+  val_msg_subset = sub(" ERROR.*","",last_val_msg);
+  validation_str = substr(val_msg_subset, nchar(val_msg_subset)-3,nchar(val_msg_subset))
+  if (validation_str == 'GOOD'){
+    validationG0F1P2 = 0
+  } else if (validation_str == 'FAIR'){
+    validationG0F1P2 = 1
+  } else if (validation_str == 'POOR'){
+    validationG0F1P2 = 2
+  }
+  
+  cat(sprintf('alignment timestamp = %i...  ', et_alignment_time))
+  
+  cat('Done.\n')
+  
+  
   # Settings:
   # 1000 Hz sample rate
   # 1280 (w) x 1024 (h) screen size)
@@ -148,6 +227,20 @@ for (s in 1:number_of_subjects){
 
   pupil_data_raw = raw_et_data$raw$ps;
   time_data = raw_et_data$raw$time; # UNCORRECTED! in milliseconds
+  
+  ###### 0. Align & Trim Pupil Data to the Relevant Timeline ######
+  
+  # Align
+  time_data = time_data - et_alignment_time; # Correct all timestamps to be relative to this moment
+
+  # Trim
+  time_buffer = 1000;
+  
+  ind_to_keep = (time_data > (event_timestamps$decision_start[1] - time_buffer)) & 
+    (time_data < (event_timestamps$iti_end[number_of_trials] + time_buffer))
+  
+  time_data = time_data[ind_to_keep];
+  pupil_data_raw = pupil_data_raw[ind_to_keep];
 
   ###### 1. Identify blink points ######
   missing_points_ind = which(is.na(pupil_data_raw)); # index of all missing datapoints
@@ -241,84 +334,9 @@ for (s in 1:number_of_subjects){
 
   downsampled_et_data = cbind(time_data_downsampled, pupil_data_extend_interp_smooth_mm_downsampled);
 
-  ###### 9. Identify and extract timestamp for practice start from ET file ######
-  cat('Aligning timestamps...  ')
-  et_file_connection = file(etfn[s],'r') # open the file connection to the ASC file.
-
-  msgs = ''; # where we'll store messages
-  number_of_messages = 0; # set our counter
-
-  while ( TRUE ) {
-    line = readLines(et_file_connection, n = 1) # read a line of the file
-    if ( length(line) == 0 ) { # if we have read the full file and there are no more lines left, stop
-      break
-    }
-    # print(line) # for debugging
-    if ('MSG' == substr(line, 1, 3)) { # if this is a 'message' line...
-      number_of_messages = number_of_messages + 1; # increment the # of messages we've found
-      # print(line) # for debugging
-      msgs[number_of_messages] = line; # store the message
-    }
-  }
-
-  close(et_file_connection) # close the file connection
-
-  for (m in 1:number_of_messages){
-    if ('Practice Instructions Shown' == substr(msgs[m], nchar(msgs[m])-26, nchar(msgs[m]))){ # identify the msg with this text
-      first_ind = 5; # the first digit is always 5 characters in
-      last_ind = nchar(msgs[m])-68; # the "practice text shown" is always 18 characters long, preceded by a 1 char space; so last number is 20 back from end
-      et_alignment_time = as.numeric(substr(msgs[m], first_ind, last_ind)) # pull out the start time from that msg
-    }
-  }
-
-  ####### 10. Identify and extract Validation Information/metrics from ET file #######
-  val_msgs = grep('VALIDATION HV', msgs);
-  last_val_msg = msgs[val_msgs[length(val_msgs)]];
-
-  validation_average_error = as.numeric(substr(sub(".*ERROR ","",last_val_msg),1,5));
-  val_msg_subset = sub(" max.*","",last_val_msg);
-  validation_max_error = as.numeric(substr(val_msg_subset, nchar(val_msg_subset)-4, nchar(val_msg_subset)))
-  val_msg_subset = sub(" ERROR.*","",last_val_msg);
-  validation_str = substr(val_msg_subset, nchar(val_msg_subset)-3,nchar(val_msg_subset))
-  if (validation_str == 'GOOD'){
-    validationG0F1P2 = 0
-  } else if (validation_str == 'FAIR'){
-    validationG0F1P2 = 1
-  } else if (validation_str == 'POOR'){
-    validationG0F1P2 = 2
-  }
-
-  cat(sprintf('alignment timestamp = %i...  ', et_alignment_time))
-
-  time_data = time_data - et_alignment_time; # Correct all timestamps to be relative to this moment
-  downsampled_et_data[,1] = downsampled_et_data[,1] - et_alignment_time # correct downsampled timestamps too!
-
-  cat('Done.\n')
-
   ##### Conduct basic trial-level analyses ######
-  ###### 1. Create Behavioral Event Timestamp Matrix ######
-  tmpdata = read.csv(rdmfn[s]);
 
-  event_timestamps = array(data = NA, dim = c(number_of_trials, length(timestamp_column_names)))
-  colnames(event_timestamps) <- timestamp_column_names;
-  event_timestamps = as.data.frame(event_timestamps)
-
-  beh_alignment_time = tmpdata$pracStartTxt.started[3];
-
-  trial_index = is.finite(tmpdata$realChoiceResp.started);
-
-  event_timestamps$decision_start = tmpdata$realChoiceResp.started[trial_index];
-  event_timestamps$decision_end = tmpdata$isiRealFix.started[trial_index];
-  event_timestamps$outcome_start = tmpdata$isiRealFix.stopped[trial_index];
-  event_timestamps$outcome_end = tmpdata$itiRealFix.started[trial_index];
-  event_timestamps$iti_end = tmpdata$itiRealFix.stopped[trial_index];
-
-  event_timestamps[!(is.finite(tmpdata$choices[trial_index])),] = NA;
-
-  event_timestamps = event_timestamps - beh_alignment_time; # align the behavioral data to the same moment
-  event_timestamps = event_timestamps * 1000; # into milliseconds, like eyetracking
-
-  ###### 2. Calculate Summary Metrics of Pupillometry #####
+  ###### Calculate Summary Metrics of Pupillometry #####
   cat('Calculating summary pupillometry measures...  ')
 
   et_summary_stats = array(data = NA, dim = c(number_of_trials, length(et_summary_data_column_names)))
@@ -389,7 +407,7 @@ for (s in 1:number_of_subjects){
   number_of_missing_trials_proc = sum(is.na(et_summary_stats$wind1_predisp_onset_mean));
   fraction_of_missing_trials_proc = number_of_missing_trials_proc/number_of_trials;
 
-  cat(sprintf('CGE%03i: RAW missing %i samples (%.1f%%); %i blinks. PROCESSED missing %i samples (%.1f%%). %i trial(s) (%.0f%%) not analyzed for missing data.\n',
+  cat(sprintf('EDI%03i: RAW missing %i samples (%.1f%%); %i blinks. PROCESSED missing %i samples (%.1f%%). %i trial(s) (%.0f%%) not analyzed for missing data.\n',
               subject_IDs[s], number_of_missing_samples_raw, fraction_of_missing_samples_raw*100, number_of_blinks,
               number_of_missing_samples_proc, fraction_of_missing_samples_proc*100, number_of_missing_trials_proc,
               fraction_of_missing_trials_proc*100))
@@ -433,36 +451,35 @@ for (s in 1:number_of_subjects){
     'pupil_data_extend_interp_smooth'
     ))
 
-  pdf(sprintf('%s/plots/cge%03i_processed_pupil_plot.pdf',config$path$data$processed, subject_IDs[s]))
-  plot(pupil_data_extend_interp_smooth_mm, type = 'l', main = sprintf('Processed pupil data for CGE%03i', subject_IDs[s]),
+  pdf(sprintf('%s/plots/edi%03i_processed_pupil_plot.pdf',config$path$data$processed, subject_IDs[s]))
+  plot(pupil_data_extend_interp_smooth_mm, type = 'l', main = sprintf('Processed pupil data for EDI%03i', subject_IDs[s]),
        xlab = 'milliseconds', ylab = 'pupil diameter (mm)')
   dev.off()
 
   data_pupil = rbind(data_pupil, cbind(et_summary_stats, event_timestamps));
 
+  dir.create(file.path(config$path$data$processed, sprintf('edi%03i',subject_IDs[s])), showWarnings = FALSE)
+  
   save(pupil_data_extend_interp_smooth_mm, time_data, et_summary_stats, event_timestamps, blink_data,
-       file=sprintf('%s/cge%03i/cge%03i_et_processed_%s.RData',config$path$data$processed,subject_IDs[s],subject_IDs[s],format(Sys.Date(), format="%Y%m%d")))
+       file=sprintf('%s/edi%03i/edi%03i_et_processed_%s.RData',config$path$data$processed,subject_IDs[s],subject_IDs[s],format(Sys.Date(), format="%Y%m%d")))
   save(downsampled_et_data, event_timestamps, et_summary_stats,
-       file=sprintf('%s/cge%03i/cge%03i_et_processed_downsampled_%s.RData',config$path$data$processed,subject_IDs[s],subject_IDs[s],format(Sys.Date(), format="%Y%m%d")))
+       file=sprintf('%s/edi%03i/edi%03i_et_processed_downsampled_%s.RData',config$path$data$processed,subject_IDs[s],subject_IDs[s],format(Sys.Date(), format="%Y%m%d")))
 
-  cat(sprintf('Finished with subject CGE%03i.\n\n',subject_IDs[s]))
+  cat(sprintf('Finished with subject EDI%03i.\n\n',subject_IDs[s]))
 }
 
 
 setwd(config$path$data$processed); # set path to processed to save out the summary data
 
-write.csv(data_pupil, file=sprintf('cge_processed_eyetracking_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
+write.csv(data_pupil, file=sprintf('edi_processed_eyetracking_data_%s.csv',format(Sys.Date(), format="%Y%m%d")),
           row.names = F);
-write.csv(pupil_QA_metrics, file = sprintf('cge_pupil_QA_metrics_%s.csv',format(Sys.Date(), format="%Y%m%d")),
+write.csv(pupil_QA_metrics, file = sprintf('edi_pupil_QA_metrics_%s.csv',format(Sys.Date(), format="%Y%m%d")),
           row.names = F);
 
 setwd(config$path$data$raw); # reset the path to raw.
 
-timeElapsed = toc();
+timeElapsed = toc(quiet = T);
 
 cat(sprintf('Processing took %s.\n',substr(timeElapsed$callback_msg, start = 0, stop = nchar(timeElapsed$callback_msg)-8)))
 cat('Finished processing eye-tracking data.\n\n\n')
-
-# For Future Eye-Tracking Analysis Development ####
-# - store baseline-corrected pupil diameter traces for event segments (i.e. dec; otc)
 
