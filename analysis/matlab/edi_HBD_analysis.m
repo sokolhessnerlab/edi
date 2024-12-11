@@ -5,7 +5,7 @@
 base_github_path = '/Users/sokolhessner/Documents/gitrepos/edi/';
 hmm_github_path = [base_github_path 'analysis/matlab/HMeta-d-master/'];
 base_data_path = '/Volumes/shlab/Projects/EDI/data/';
-proc_data_path = [base_data_path 'processed/'];
+proc_data_path = [base_data_path 'preprocessed/'];
 raw_data_path = [base_data_path 'raw/'];
 
 fnames = dir([raw_data_path '/*/ediTask_EDI*.mat']);
@@ -57,6 +57,8 @@ countacc = nan(6,nS); % for the 6 trials
 countaccM = nan(nS,1); % Mean count accuracy using standard formula
 counterr = nan(6,nS); % error in counts for each of 6 trials
 counterrM = nan(nS,1); % Mean error
+counterrpct = nan(6,nS); % percent error in counts for each of 6 trials
+counterrpctM = nan(nS,1); % Mean percent error
 
 for s = 1:nS
     fprintf('%s\n',subjIDs{s});
@@ -133,6 +135,8 @@ for s = 1:nS
             countaccM(s) = mean(countacc(:,s));
             counterr(:,s) = countdata(:,2,s) - countdata(:,3,s); % Observed - Reported
             counterrM(s) = mean(counterr(:,s));
+            counterrpct(:,s) = (countdata(:,2,s) - countdata(:,3,s))./countdata(:,2,s); % Observed - Reported
+            counterrpctM(s) = mean(counterrpct(:,s));
         end
     end
 end
@@ -343,12 +347,12 @@ output = table(cell2mat(subjIDs),pcorr,missedTs,btrChance,pcorrHalf,...
     meanjudg,meanconf,pcorrLC,pcorrHC,confWrong,confRight,...
     M_dprime,M_ratio,...
     dprime,fit_all.meta_d',fit_all.Mratio',...
-    countaccM,counterrM,abs(counterrM),...
+    countaccM,counterrM,abs(counterrM),counterrpctM,abs(counterrpctM),...
     'VariableNames',{'SubjectID','pcorrect','missedTrials','pbetterthanchance','pcorrectbyhalf',...
     'MeanJudgment','MeanConfidence','pcorrectLowConf','pcorrectHighConf','confWrong','confRight'...
     'metadprimeMLE','MratioMLE',...
     'dprime','metadprimeBayesian','MRatioBayesian',...
-    'CountAccuracy','CountError','AbsCountError'});
+    'CountAccuracyM','CountErrorM','AbsCountError','CountErrorPercentM','AbsCountErrorPercentM'});
 
 writetable(output,[proc_data_path 'EDI_HBD_taskperformance_output.csv'])
 
