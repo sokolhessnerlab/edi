@@ -4,7 +4,7 @@
 # (Effort, Decision-making and Interoception) study.
 
 
-# STEP 1: SET YOUR WORKING DIRECTORY!
+# STEP 1: SET YOUR WORKING DIRECTORY! ##############
 # # On PSH's computers...
 # setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
 # # On SF's computers...
@@ -13,24 +13,25 @@ setwd('/Users/sophie/Desktop/GitHub/edi/');
 # setwd('C:/Users/jvonm/Documents/GitHub/cge');
 
 
-# STEP 2: then run from here on the same
+# STEP 2: then run from here on the same ##############
 config = config::get();
 
 et_processing_file_name = normalizePath(dir(pattern = glob2rx('edi_et_processing.R'), full.names = T, recursive = T));
 
-# Run the Eye-Tracking Processing Script ###########
-source(et_processing_file_name) # NOTE: This will take a long time!!
+## Run the Eye-Tracking Processing Script ###########
+# source(et_processing_file_name) # NOTE: This will take a long time!!
 
-# Prepare for the rest of the processing ###########
+## Prepare for the rest of the processing ###########
 setwd(config$path$data$raw);
 
-# List all the data files
+### List all the data files ##############
 rdmfn = dir(pattern = glob2rx('edi*RDM*.csv'),full.names = T, recursive = T);
 sspfn = dir(pattern = glob2rx('ediSYMSPANbothReal_*.csv'), full.names = T, recursive = T);
 ospfn = dir(pattern = glob2rx('ediOSPANbothReal_*.csv'), full.names = T, recursive = T);
 qualfn = dir(pattern = glob2rx('Qualtrics*.csv'), full.names = T, recursive = T);
+manfn = dir(pattern = glob2rx('EDI_Post_Study_Questionnaire_Quant_HandEnteredData_*.csv'), full.names = T, recursive = T);
 
-# Identify the number of participants from the file listing
+### Identify the number of participants from the file listing ##############
 subjectIDs = c();
 for (rfn in 1:length(rdmfn)){
   subjectIDs[rfn] = as.numeric(substr(rdmfn[rfn],6,8))
@@ -39,10 +40,11 @@ for (rfn in 1:length(rdmfn)){
 number_of_subjects = length(subjectIDs);
 
 
-### Qualtrics EDI Survey Processing ###
+## Qualtrics EDI Survey Processing #################
 cat('Processing Survey data...\n')
 
 raw_qualtrics_data = read.csv(qualfn[(length(qualfn))]); # Load the last Qualtrics file, assuming naming convention sorts the files so that last is most recent!
+manually_entered_data = read.csv(manfn[(length(manfn))]);
 
 survey_colnames = c(
   'subjectID',
@@ -58,7 +60,8 @@ survey_colnames = c(
   'IUS',
   'SNS_ability',
   'SNS_preference',
-  'SNS'
+  'SNS',
+  colnames(manually_entered_data)[c(2:10,17:46)]
 );
 
 survey_data = array(data = NA, dim = c(number_of_subjects, length(survey_colnames)));
@@ -164,11 +167,26 @@ SNS_tmpSum = as.numeric(raw_qualtrics_data$SNS.1[ind_overall]) +
 
 survey_data$SNS = SNS_tmpSum/8
 
+survey_data[,15:length(survey_colnames)] = manually_entered_data[,c(2:10,17:46)] # day 1 questions
+
+# TODO: Score STAI-T and append that as a column
+
 cat('Done.\n\n')
 
-### Prepping for Subject-Level Task Data Loop ###
+### List all the Heartbeat Detection (HBD) data files ##############
+setwd(config$path$data$processed);
+hbdfn = dir(pattern = 'EDI_HBD_taskperformance_output.csv');
+hbd_data = read.csv(hbdfn);
+for (h_id in 1:dim(hbd_data)[1]){
+  hbd_data$SubjectID[h_id] = as.numeric(substr(hbd_data$SubjectID[h_id],4,6))
+}
+hbd_data$SubjectID = as.numeric(hbd_data$SubjectID)
+
+## Prepping for Subject-Level Task Data Loop #################
 
 cat('Processing decision-making and working memory data... ')
+
+setwd(config$path$data$raw);
 
 # Store some basic information about size of the decision-making task
 num_static_trials = 50;
@@ -206,7 +224,8 @@ column_names_dm = c(
   'IUS',
   'SNS_ability',
   'SNS_preference',
-  'SNS'
+  'SNS',
+  colnames(hbd_data)[-1]
 );
 
 data_dm = array(data = NA, dim = c(0, length(column_names_dm)));
@@ -364,7 +383,13 @@ for(s in 1:number_of_subjects){
   dm_data_to_add[,29] = survey_data$SNS_preference[s];
   
   dm_data_to_add[,30] = survey_data$SNS[s];
-
+  
+  hbd_row_ind = hbd_data$SubjectID == sub_id
+  if (any(hbd_row_ind)){
+    for (hbd_datapoint in 2:dim(hbd_data)[2]){
+      dm_data_to_add[,30+hbd_datapoint-1] = hbd_data[hbd_row_ind,hbd_datapoint]
+    }
+  }
   # Add this person's DM data to the total DM data.
   data_dm = rbind(data_dm,dm_data_to_add);
 }
