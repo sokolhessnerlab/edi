@@ -46,7 +46,9 @@ rtmtx = nan(nS,160);
 pcorrHalf = nan(nS,2); % p(correct) by half
 bTime = nan(nS,2); % beta and p-value for linear effect of time on accuracy
 
-manually_entered_data = readtable([raw_data_path 'EDI_Post_Study_Questionnaire_Quant.xlsx']);
+hbd_fnames = dir([raw_data_path '/EDI_Post_Study_Questionnaire_Quant_HandEnteredData_*.csv']);
+manually_entered_data = readtable([raw_data_path hbd_fnames(end).name]);
+% manually_entered_data = readtable([raw_data_path 'EDI_Post_Study_Questionnaire_Quant.xlsx']);
 
 countdata = nan(6,3,nS); % trials by details (time, nHB, reported count) by subj
 % repcounts = xlsread('ILD_CountEstimates.xlsx')';
