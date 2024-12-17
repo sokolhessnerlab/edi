@@ -46,6 +46,53 @@ cat('Processing Survey data...\n')
 raw_qualtrics_data = read.csv(qualfn[(length(qualfn))]); # Load the last Qualtrics file, assuming naming convention sorts the files so that last is most recent!
 manually_entered_data = read.csv(manfn[(length(manfn))]);
 
+man_colnames_to_retain = c("D1_A1",
+                           "D1_B1",
+                           "D1_B2",
+                           "D1_B3_1",
+                           "D1_B3_2",
+                           "D1_B3_3",
+                           "D1_B3_4",
+                           "D1_B4",
+                           "D1_B8",
+                           "D2_1A",
+                           "D2_1B",
+                           "D2_4",
+                           "D2_5",
+                           "D2_7",
+                           "D2_9",
+                           "Sex_F1M0",
+                           "Height",
+                           "Lbs",
+                           "Age")
+# For question text, see ReadMe_QuestionText.xlsx on the drive at shlab/EDI/documents/
+
+## Copy made Dec. 17, 2024 for Day questions:
+# D1_A1	  In general, how stressed did you feel during today's experiment?
+# D1_B1	  How motivated were you to earn as much money as possible during the monetary decision-making task?
+# D1_B2	  In general, how easy or difficult was it to decide between the gambles and the guaranteed alternatives?
+# D1_B3_1	How easy/difficult was it to make choices on ‘one much better’ trials, e.g., when the between the gamble and the guaranteed alternative felt pretty different to you?
+# D1_B3_2	On ‘one much better’ trials, e.g., when the between the gamble and the guaranteed alternative felt pretty different to you, how much mental effort did you put into making your decision?
+# D1_B3_3	How would you rate your decision-making experience on ‘similar’ trials, e.g., when the gambles and guaranteed alternatives felt similarly good to you?
+# D1_B3_4	On ‘similar’ trials, e.g., when the gambles and guaranteed alternatives felt similarly good to you, how much mental effort did you put into making your decision?
+# D1_B4	  In the monetary decision-making task, you did not receive any actual money. How strongly did this influence your motivation to do the task?
+# D1_B8	  In general, when making tough decisions, how intensely do you experience the feeling of mental effort?
+# D2_1A	  How easy or difficult was it to judge whether the tones were in sync with or delayed from your heartbeat
+# D2_1B	  How easy or difficult was it to rate your confidence?
+# D2_4	  On what percentage of the trials do you think you were correct (from chance, 50%, to perfect, 100%)?
+# D2_5	  This question is about how closely your confidence ratings corresponded with your judgments. Let’s say a 0 indicates that your confidence rating had no correspondence to your performance (i.e. high confidence and low confidence trials had the same chance of being correct), and a 10 indicates that your confidence rating perfectly matched the chance of you being correct (high confidence trials had the highest chance of being correct; low confidence trials had the lowest). What number would you say represents how closely your confidence ratings corresponded with your performance?
+# D2_7	  On average, how many days per week do you exercise?
+# D2_9	  During a typical session of exercise for you, how challenged are your heart and lungs? (from 1 = not challenged to 7 = very challenged)
+
+
+STAI_col_names = c("STAI1", "STAI2", "STAI3", "STAI4","STAI5", "STAI6", "STAI7", "STAI8","STAI9", "STAI10", "STAI11", "STAI12","STAI13", "STAI14", "STAI15", "STAI16","STAI17", "STAI18", "STAI19", "STAI20");
+STAI_data <- manually_entered_data[, STAI_col_names]
+
+#Coding Reverse Scored Items using multiple iterations of a 'for loop' for survey items 1, 3, 6, 7, 10, 14, 16, and 19.
+reversed_STAI <- c(1, 3, 6, 7, 10, 13, 14, 16, 19)
+forward_STAI <- c(2, 4, 5, 8, 9, 11, 12, 15, 17, 18, 20) # nice to do this programmatically (i.e. to the exclusion of the reverse-coded items)
+tmp_STAI_score = rowSums(cbind(STAI_data[,forward_STAI], (3-STAI_data[,reversed_STAI])));
+
 survey_colnames = c(
   'subjectID',
   'age',
@@ -61,7 +108,9 @@ survey_colnames = c(
   'SNS_ability',
   'SNS_preference',
   'SNS',
-  colnames(manually_entered_data)[c(2:10,17:46)]
+  'STAIT',
+  man_colnames_to_retain,
+  'BMI'
 );
 
 survey_data = array(data = NA, dim = c(number_of_subjects, length(survey_colnames)));
@@ -167,9 +216,17 @@ SNS_tmpSum = as.numeric(raw_qualtrics_data$SNS.1[ind_overall]) +
 
 survey_data$SNS = SNS_tmpSum/8
 
-survey_data[,15:length(survey_colnames)] = manually_entered_data[,c(2:10,17:46)] # day 1 questions
+survey_data$STAIT = tmp_STAI_score;
 
-# TODO: Score STAI-T and append that as a column
+survey_data[,man_colnames_to_retain] = manually_entered_data[,man_colnames_to_retain] # day 1 questions
+
+survey_data$Lbs = as.numeric(survey_data$Lbs) # there's an "n/a" b/c of a participant who didn't want to provide their weight
+survey_data$BMI = survey_data$Lbs/(survey_data$Height^2)*703
+# Classic BMI "categories":
+# < 18.5 = underweight (0: 24/12/17)
+# 18.5-24.9 = healthy (36: 24/12/17)
+# 25-29.9 = overweight (12: 24/12/17)
+# 30+ = obese (4: 24/12/17)
 
 cat('Done.\n\n')
 
