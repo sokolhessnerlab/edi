@@ -220,6 +220,8 @@ survey_data$STAIT = tmp_STAI_score;
 
 survey_data[,man_colnames_to_retain] = manually_entered_data[,man_colnames_to_retain] # day 1 questions
 
+survey_data$Sex_F1M0 = as.numeric(survey_data$Sex_F1M0 == 'F')
+
 survey_data$Lbs = as.numeric(survey_data$Lbs) # there's an "n/a" b/c of a participant who didn't want to provide their weight
 survey_data$BMI = survey_data$Lbs/(survey_data$Height^2)*703
 # Classic BMI "categories":
@@ -227,11 +229,6 @@ survey_data$BMI = survey_data$Lbs/(survey_data$Height^2)*703
 # 18.5-24.9 = healthy (36: 24/12/17)
 # 25-29.9 = overweight (12: 24/12/17)
 # 30+ = obese (4: 24/12/17)
-
-# Merge in the heartbeat detection data
-survey_data = merge(x = survey_data, y = hbd_data, all.x = T, by.x = 'subjectID', by.y = 'SubjectID')
-
-cat('Done.\n\n')
 
 ### List all the Heartbeat Detection (HBD) data files ##############
 setwd(config$path$data$processed);
@@ -241,6 +238,11 @@ for (h_id in 1:dim(hbd_data)[1]){
   hbd_data$SubjectID[h_id] = as.numeric(substr(hbd_data$SubjectID[h_id],4,6))
 }
 hbd_data$SubjectID = as.numeric(hbd_data$SubjectID)
+
+# Merge survey & heartbeat detection data into a single survey item
+survey_data = merge(x = survey_data, y = hbd_data, all.x = T, by.x = 'subjectID', by.y = 'SubjectID')
+
+cat('Done.\n\n')
 
 ## Prepping for Subject-Level Task Data Loop #################
 
@@ -272,20 +274,7 @@ column_names_dm = c(
   'ospan',
   'symspan',
   'complexspan',
-  'age',
-  'gender',
-  'ethnicity',
-  'race',
-  'education',
-  'firstgen',
-  'politicalorientation',
-  'IUS_prospective',
-  'IUS_inhibitory',
-  'IUS',
-  'SNS_ability',
-  'SNS_preference',
-  'SNS',
-  colnames(hbd_data)[-1]
+  colnames(survey_data)[-1]
 );
 
 data_dm = array(data = NA, dim = c(0, length(column_names_dm)));
@@ -414,41 +403,15 @@ for(s in 1:number_of_subjects){
   dm_data_to_add[,13] = tmpdata$bestRho[is.finite(tmpdata$bestRho)];
   dm_data_to_add[,14] = tmpdata$bestMu[is.finite(tmpdata$bestMu)];
   
+  # Span scores
   dm_data_to_add[,15] = complexSpanScores$ospanScore[s];
   dm_data_to_add[,16] = complexSpanScores$symspanScore[s];
   dm_data_to_add[,17] = complexSpanScores$compositeSpanScore[s];
   
-  dm_data_to_add[,18] = survey_data$age[s];
-  
-  dm_data_to_add[,19] = survey_data$gender[s];
-  
-  dm_data_to_add[,20] = survey_data$ethnicity[s];
-  
-  dm_data_to_add[,21] = survey_data$race[s];
-  
-  dm_data_to_add[,22] = survey_data$education[s];
-  
-  dm_data_to_add[,23] = survey_data$firstgen[s];
-  
-  dm_data_to_add[,24] = survey_data$politicalorientation[s];
-  
-  dm_data_to_add[,25] = survey_data$IUS_prospective[s];
-  
-  dm_data_to_add[,26] = survey_data$IUS_inhibitory[s];
-  
-  dm_data_to_add[,27] = survey_data$IUS[s];
-  
-  dm_data_to_add[,28] = survey_data$SNS_ability[s];
-  
-  dm_data_to_add[,29] = survey_data$SNS_preference[s];
-  
-  dm_data_to_add[,30] = survey_data$SNS[s];
-  
-  hbd_row_ind = hbd_data$SubjectID == sub_id
-  if (any(hbd_row_ind)){
-    for (hbd_datapoint in 2:dim(hbd_data)[2]){
-      dm_data_to_add[,30+hbd_datapoint-1] = hbd_data[hbd_row_ind,hbd_datapoint]
-    }
+  # Survey data + Heartbeat Detection Data
+  survey_data_to_add = drop(survey_data[s,2:ncol(survey_data)]);
+  for (n in 18:length(column_names_dm)){
+    dm_data_to_add[,n] = as.numeric(survey_data_to_add[n-17])
   }
   # Add this person's DM data to the total DM data.
   data_dm = rbind(data_dm,dm_data_to_add);
