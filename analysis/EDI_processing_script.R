@@ -228,6 +228,9 @@ survey_data$BMI = survey_data$Lbs/(survey_data$Height^2)*703
 # 25-29.9 = overweight (12: 24/12/17)
 # 30+ = obese (4: 24/12/17)
 
+# Merge in the heartbeat detection data
+survey_data = merge(x = survey_data, y = hbd_data, all.x = T, by.x = 'subjectID', by.y = 'SubjectID')
+
 cat('Done.\n\n')
 
 ### List all the Heartbeat Detection (HBD) data files ##############
@@ -456,6 +459,7 @@ data_dm = cbind(data_dm, data_pupil[,3:ncol(data_pupil)]); # these should have t
 data_dm = as.data.frame(data_dm) # make it a data frame so it plays nice
 
 cat('Done.\n')
+
 
 # save out CSVs with the clean, compiled data!
 cat('Saving out data... ')
