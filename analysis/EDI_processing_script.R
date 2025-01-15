@@ -6,9 +6,9 @@
 
 # STEP 1: SET YOUR WORKING DIRECTORY! ##############
 # # On PSH's computers...
-# setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
+setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
 # # On SF's computers...
-setwd('/Users/sophie/Desktop/GitHub/edi/');
+# setwd('/Users/sophie/Desktop/GitHub/edi/');
 # # On Von's PC Laptop "tabletas"...
 # setwd('C:/Users/jvonm/Documents/GitHub/cge');
 
@@ -19,7 +19,7 @@ config = config::get();
 et_processing_file_name = normalizePath(dir(pattern = glob2rx('edi_et_processing.R'), full.names = T, recursive = T));
 
 ## Run the Eye-Tracking Processing Script ###########
-# source(et_processing_file_name) # NOTE: This will take a long time!!
+source(et_processing_file_name) # NOTE: This will take a long time!!
 
 ## Prepare for the rest of the processing ###########
 setwd(config$path$data$raw);
