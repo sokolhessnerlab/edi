@@ -69,7 +69,14 @@ for (s in 1:length(fn)){
     tmp_hbd_data$output[[5]]) # rating
   hbd_tonetask_trials = rbind(hbd_tonetask_trials, data_to_add)
 }
-
+hbdcolnames = c('subjectnumber',
+                'trialnumber',
+                'reactiontime',
+                'choiceS1D0',
+                'syncstateS1D0',
+                'confrating')
+hbd_tonetask_trials = as.data.frame(hbd_tonetask_trials);
+colnames(hbd_tonetask_trials) <- hbdcolnames
 
 # Data Quality Checks & Exclusions ############################################
 
