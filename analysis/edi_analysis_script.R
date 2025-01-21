@@ -125,14 +125,34 @@ mean(mean_rts[keep_dm_rt]) # mean rt 1.56 seconds (Jan '25)
 
 ## Interoception Data Check #################################################
 
+has_hbd_data = is.finite(survey_data$dprime)
+
 ### EXCLUSION: Tone Task ####################################################
 
 # Exclude based on... 
 # - Number of missed trials: 20 or more. 
+exclusion_hbd_tt_num_trial_missed = 20
 # - Reaction time: 100ms or faster on 20 or more trials
+exclusion_hbd_tt_rtlim = .1 # 100ms, in units of seconds
+exclusion_hbd_tt_rtlim_num = 20
 
+# Missed Trials
+keep_hbd_tt_missedtrials = rep(TRUE, number_of_subjects)
+keep_hbd_tt_missedtrials[which(survey_data$missedTrials >= exclusion_hbd_tt_num_trial_missed)] = FALSE
 
-# EXCLUSIONS GO HERE
+# Reaction Time
+keep_hbd_tt_toofasttrials = rep(TRUE, number_of_subjects)
+for (s in 1:number_of_subjects){
+  if(any(hbd_tonetask_trials$subjectnumber == s)){
+    tmp_hbd = hbd_tonetask_trials[hbd_tonetask_trials$subjectnumber == s,]
+    num_hbd_tt_trials_too_fast = sum(tmp_hbd$reactiontime <= exclusion_hbd_tt_rtlim, na.rm = T)
+    if(num_hbd_tt_trials_too_fast >= exclusion_hbd_tt_rtlim_num){
+      keep_hbd_tt_toofasttrials[s] = FALSE
+    }
+  }
+}
+
+good_hbd_data = which(has_hbd_data & keep_hbd_tt_missedtrials & keep_hbd_tt_toofasttrials)
 
 
 ### Survey Exclusions
