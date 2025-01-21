@@ -154,7 +154,6 @@ for (s in 1:number_of_subjects){
 
 good_hbd_data = which(has_hbd_data & keep_hbd_tt_missedtrials & keep_hbd_tt_toofasttrials)
 
-
 ### Survey Exclusions
 # quick responses to surveys (still figuring out how that should be done)
 # questionable pattern of responses to surveys (nail in the coffin)
@@ -168,6 +167,7 @@ keep_participants = which(keep_check_trial & keep_dm_rt);
 clean_data_dm = data_dm[data_dm$subjectnumber %in% keep_participants,]
 clean_data_complexspan = complexSpanScores[complexSpanScores$subjectnumber %in% keep_participants,]
 clean_data_survey = survey_data[survey_data$subjectID %in% keep_participants,]
+clean_hbd_data = hbd_tonetask_trials[hbd_tonetask_trials$subjectnumber %in% good_hbd_data,]
 
 number_of_clean_subjects = length(keep_participants);
 number_of_clean_subjects # 54 participants (Jan '25)
