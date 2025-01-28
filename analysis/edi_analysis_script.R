@@ -244,54 +244,34 @@ sum(clean_data_survey$education == 10, na.rm = T) # 0
 
 # Main Questionnaire Scores:
 
-# NCS - might be positive motivation to exert effort
-mean(clean_data_survey$NCS, na.rm = T) # M = 59.40476
-sd(clean_data_survey$NCS, na.rm = T) # SD = 10.85293
-median(clean_data_survey$NCS, na.rm = T) # 60
-range(clean_data_survey$NCS, na.rm = T) # 39-80
 # IUS - might be negative motivation to exert effort
-mean(clean_data_survey$IUS, na.rm = T) # M = 33.82143
-sd(clean_data_survey$IUS, na.rm = T) # SD = 8.067726
-median(clean_data_survey$IUS, na.rm = T) # 33
-range(clean_data_survey$IUS, na.rm = T) # 16-57
+mean(clean_data_survey$IUS, na.rm = T) # M = 32.2
+sd(clean_data_survey$IUS, na.rm = T) # SD = 8.3
+median(clean_data_survey$IUS, na.rm = T) # 30.5
+range(clean_data_survey$IUS, na.rm = T) # 17-53
 # SNS
-mean(clean_data_survey$SNS, na.rm = T) # M = 4.05506
-sd(clean_data_survey$SNS, na.rm = T) # SD = 0.8809717
-median(clean_data_survey$SNS, na.rm = T) # 4.125
-range(clean_data_survey$SNS, na.rm = T) # 1.625-5.875
-# PSS
-mean(clean_data_survey$PSS, na.rm = T) # M = 22.96429
-sd(clean_data_survey$PSS, na.rm = T) # SD = 6.340625
-median(clean_data_survey$PSS, na.rm = T) # 23
-range(clean_data_survey$PSS, na.rm = T) # 7-43
+mean(clean_data_survey$SNS, na.rm = T) # M = 4.0
+sd(clean_data_survey$SNS, na.rm = T) # SD = 0.97
+median(clean_data_survey$SNS, na.rm = T) # 4.2
+range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
-cor_matrix = cor(cbind(clean_data_survey[,c('NCS','IUS','SNS','PSS')],clean_data_complexspan['compositeSpanScore']),
+
+cor_matrix = cor(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']),
                  use = 'complete.obs');
-cor.test(clean_data_survey$NCS, clean_data_survey$IUS) # r(82) = -0.239142, p = 0.02846
-cor.test(clean_data_survey$NCS, clean_data_survey$SNS) # n.s., r(82) = 0.1917, p = 0.08066
-cor.test(clean_data_survey$NCS, clean_data_survey$PSS) # r(82) = -0.2855222, p = 0.008471
-cor.test(clean_data_survey$IUS, clean_data_survey$SNS) # n.s., r(82) = 0.139341, p = 0.2062 # using both in EDI
-cor.test(clean_data_survey$IUS, clean_data_survey$PSS) # r(82) = 0.4737519, p = 5.321e-06
-cor.test(clean_data_survey$SNS, clean_data_survey$PSS) # n.s., r(82) = -0.1120716, p = 0.3101
-cor.test(clean_data_survey$NCS, clean_data_complexspan$compositeSpanScore) # n.s., r(79) = 0.04481055, p = 0.6912
-cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) # n.s., r(79) = -0.003903688, p = 0.9724
-cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) # n.s., r(79) = 0.262511, p = 0.01791
-cor.test(clean_data_survey$PSS, clean_data_complexspan$compositeSpanScore) # n.s., r(79) = -0.1300933, p = 0.247
+cor.test(clean_data_survey$IUS, clean_data_survey$SNS) 
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) # correlated!
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, method = "spearman") # still correlated! 
+cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) 
 
-plot(cbind(clean_data_survey[,c('NCS','IUS','SNS','PSS')],clean_data_complexspan['compositeSpanScore']));
+plot(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']));
 
-# Higher NCS, Lower IUS - maybe because people with higher NFC are more open to and like uncertainty because it allows them to think
-# Higher NCS, Lower PSS
+# IUS & Composite span may have a negative relationship. High IUS = Low Span; Low IUS = High Span
 
-# Higher IUS, Higher PSS
-
-# NO RELATIONSHIPS TO WORKING MEMORY COMPOSITE SPAN - reflects similar findings in da Silva Castanheira et al. (2021)
 
 corrplot(cor_matrix, type = 'lower')
 # Positive = blue
 # Negative = red
 
-# Any similarities to working memory span? - (Von) what is this question referring to?
 
 # TAKEAWAYS: - does this still hold true?
 # Because of several inter-item correlations, it's not wise to include these in the same model
@@ -299,9 +279,7 @@ corrplot(cor_matrix, type = 'lower')
 # However, because they're unrelated to composite span, we can freely include them alongside
 # composite working memory span (and related variables).
 
-par(mfrow = c(2,2)) # Allowing graphs to plot 2 x 2
-hist(clean_data_survey$NCS, ylab = '', xlab = 'Score', main = 'Need for Cognition (NCS)')
-abline(v = mean(clean_data_survey$NCS, na.rm = T), col = 'red', lwd = 5)
+par(mfrow = c(1,2)) # Allowing graphs to plot 1 x 2
 
 hist(clean_data_survey$IUS, ylab = '', xlab = 'Score', main = 'Intolerance of Uncertainty (IUS)')
 abline(v = mean(clean_data_survey$IUS, na.rm = T), col = 'blue', lwd = 5)
@@ -309,17 +287,12 @@ abline(v = mean(clean_data_survey$IUS, na.rm = T), col = 'blue', lwd = 5)
 hist(clean_data_survey$SNS, ylab = '', xlab = 'Score', main = 'Subjective Numerancy Scale (SNS)')
 abline(v = mean(clean_data_survey$SNS, na.rm = T), col = 'green', lwd = 5)
 
-hist(clean_data_survey$PSS, ylab = '', xlab = 'Score', main = 'Perceived Stress Scale (PSS)')
-abline(v = mean(clean_data_survey$PSS, na.rm = T), col = 'magenta', lwd = 5)
-
 par(mfrow = c(1,1)) # Returning graphs to plot 1 at a time
 
 # Make binary categorical variables for clean_data_dm based on each of the major Surveys - Median splits
 
-clean_data_dm$NCS_HighP1_LowN1 = (clean_data_dm$NCS >= median(clean_data_survey$NCS, na.rm = T))*2-1;
 clean_data_dm$IUS_HighP1_LowN1 = (clean_data_dm$IUS >= median(clean_data_survey$IUS, na.rm = T))*2-1;
 clean_data_dm$SNS_HighP1_LowN1 = (clean_data_dm$SNS >= median(clean_data_survey$SNS, na.rm = T))*2-1;
-clean_data_dm$PSS_HighP1_LowN1 = (clean_data_dm$PSS >= median(clean_data_survey$PSS, na.rm = T))*2-1;
 
 
 # DM task Analysis ############################################
@@ -335,6 +308,7 @@ easyREJ_mean_pgamble = array(dim = c(number_of_clean_subjects, 1));
 for (subj in 1:number_of_clean_subjects){
   subj_id = keep_participants[subj];
   tmpdata = clean_data_dm[clean_data_dm$subjectnumber == subj_id,]; # defines this person's data
+  
   mean_pgamble[subj] = mean(tmpdata$choice, na.rm = T);
   static_mean_pgamble[subj] = mean(tmpdata$choice[tmpdata$static0dynamic1 == 0], na.rm=T);
   dynamic_mean_pgamble[subj] = mean(tmpdata$choice[tmpdata$static0dynamic1 == 1], na.rm=T);
@@ -371,7 +345,7 @@ data_rdm <- data.frame(mean_pgamble,static_mean_pgamble,dynamic_mean_pgamble,eas
 # sem <- function(x) sd(x)/sqrt(length(x));
 # SEM function (FANCY)
 sem <- function(x){
-  if(!is.null(dim(x))){ # if x is 2-dimensional
+  if(!is.null(dim(drop(x)))){ # if x is 2-dimensional
     sem_value = array(dim = dim(x)[1]) # make SEM vector assuming ROWS
     for (row_num in 1:dim(x)[1]){
       sem_value[row_num] = sd(x[row_num,], na.rm = T)/sqrt(sum(!is.na(x[row_num,])))
