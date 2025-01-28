@@ -588,12 +588,19 @@ for (subj in 1:number_of_clean_subjects){
 # (should be trivial and match!)
 
 if (any((grid_bestRho - best_rhos) != 0)){
-  print('MISMATCH!')
+  print('RHO MISMATCH!')
 }else{
-  print('Grid search values match (as expected)')
+  print('RHO Grid search values match (as expected)')
 }
 
-# Grid search replicates (which it should!) (4/11/24)
+if (any((grid_bestMu - best_mus) != 0)){
+  print('MU MISMATCH!')
+}else{
+  print('MU Grid search values match (as expected)')
+}
+
+
+# Grid search does *not* replicate... WHY NOT? 
 
 # Then check estimated parameters vs. grid search parameters
 plot(grid_bestRho,estimated_parameters[,1], main = 'RHO',
