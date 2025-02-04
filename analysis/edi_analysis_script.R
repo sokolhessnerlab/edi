@@ -744,6 +744,7 @@ mean_easy = mean(mean_rt_easy, na.rm = T) # 1.447765
 sd_easy = sd(mean_rt_easy, na.rm = T) # 0.223144
 rt_mean_test
 
+
 # Cohen's D
 Diff = length(mean_rt_diff)
 Easy = length(mean_rt_easy)
