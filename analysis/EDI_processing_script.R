@@ -230,6 +230,15 @@ survey_data$BMI = survey_data$Lbs/(survey_data$Height^2)*703
 # 25-29.9 = overweight (12: 24/12/17)
 # 30+ = obese (4: 24/12/17)
 
+# Age Fix
+# Age is entered twice (Day 1 & Day 2) for most participants. Use the average of
+# these two ages (a few folks have NA for Day 2; a few folks have NA for Day 1; 
+# but all participants have at least one age on one of the days)
+av_age = rowMeans(cbind(survey_data$age,survey_data$Age), na.rm = T);
+
+survey_data$age = av_age;
+survey_data$Age <- NULL;
+
 ### List all the Heartbeat Detection (HBD) data files ##############
 setwd(config$path$data$processed);
 hbdfn = dir(pattern = 'EDI_HBD_taskperformance_output.csv');
