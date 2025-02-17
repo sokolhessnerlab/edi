@@ -170,7 +170,7 @@ clean_data_survey = survey_data[survey_data$subjectID %in% keep_participants,]
 clean_hbd_data = hbd_tonetask_trials[hbd_tonetask_trials$subjectnumber %in% good_hbd_data,]
 
 number_of_clean_subjects = length(keep_participants);
-number_of_clean_subjects # 54 participants (Jan '25)
+number_of_clean_subjects # 71 participants (Feb '25)
 
 # Create a re-scaled version of trial number for use in subsequent analyses
 clean_data_dm$trialnumberRS = clean_data_dm$trialnumber/max(clean_data_dm$trialnumber)
@@ -195,7 +195,7 @@ library(corrplot)
 mean(clean_data_survey$age, na.rm = T) # 19.8 years old (4/5/24)
 range(clean_data_survey$age, na.rm = T) # 12-35 (4/5/24) I think there is a typo - cge074 put 12
 sd(clean_data_survey$age, na.rm = T) # 2.63 years (4/5/24)
-hist(clean_data_survey$age, na.rm = T)
+hist(clean_data_survey$age)
 
 # Race (1 = American Indian/Alaska Native; 2 = Black/African-American; 3 = East Asian; 4 = Native Hawaiian/Pacific Islander; 5 = South Asian; 6 = White; 7 = Bi-/Multi-racial (text); 8 = Other (text); 9 = Prefer not to say)
 clean_data_survey$race # was never loaded for some reason
@@ -397,9 +397,10 @@ plot(abs(easyACC_mean_pgamble-.5),abs(easyREJ_mean_pgamble-.5),xlim = c(0,.5), y
 lines(x = c(0,1), y = c(0,1), col = 'blue')
 
 # Statistically test relative difficulty observed in easy ACC vs. easy REJ
-t.test(abs(easyACC_mean_pgamble-.5), abs(easyREJ_mean_pgamble-.5), paired = T) # n.s., t(84) = -0.001622718, p = 0.8801
+t.test(abs(easyACC_mean_pgamble-.5), abs(easyREJ_mean_pgamble-.5), paired = T) # p = 0.07617
+wilcox.test(abs(easyACC_mean_pgamble-.5), abs(easyREJ_mean_pgamble-.5), paired = T) # p = 0.1106
 
-# A: Yes, we can treat all easy trials as similarly easy (whether easy ACC or REJ), not sig different 2/9/24
+# A: Yes, we can treat all easy trials as similarly easy (whether easy ACC or REJ), not sig different 2/17/25
 
 
 ## Optimization Function Creation ############################################
