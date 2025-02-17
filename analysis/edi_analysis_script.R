@@ -737,7 +737,7 @@ lines(c(0, 2.75), c(0, 2.75))
 points(mean(median_rt_diff), mean(median_rt_easy), pch = 16, col = rgb(1, 0, 1, .75), cex = 2.5)
 
 # test easy RTs vs. diff. RTs
-rt_mean_test = t.test(mean_rt_easy,mean_rt_diff, paired = T) # VERY significant (t(84) = -10.368, p = 2.2e-16) # thesis
+rt_mean_test = t.test(mean_rt_easy,mean_rt_diff, paired = T) # VERY significant 
 mean_diff = mean(mean_rt_diff, na.rm = T) # 1.686421
 sd_diff = sd(mean_rt_diff, na.rm = T) # 0.3432346
 mean_easy = mean(mean_rt_easy, na.rm = T) # 1.447765
@@ -760,7 +760,7 @@ means = c(mean_easy, mean_diff)
 ses = c(se_easy, se_diff)
 
 choiceDifficultyGraph = barplot(means, beside = T, col = c("blue", "red"),
-                                ylim = c(0, 4), names.arg = c("Easy", "Difficult"),
+                                ylim = c(0, 2), names.arg = c("Easy", "Difficult"),
                                 ylab = "Average RTs in Seconds", main = "Choice Difficulty")
 
 arrows(choiceDifficultyGraph, means,
@@ -789,13 +789,13 @@ rt_median_vartest
 var_test_within = t.test(var_rt_easy,var_rt_diff, paired = T); # t(84) = -5.8504, p = 9.154e-08
 var_test_within
 
-yl = ceiling(max(c(max(mean_rt_diff),max(mean_rt_easy)))*10)/10
-plot(mean_rt_easy, mean_rt_diff, xlab = 'Easy trials', ylab = 'Difficult trials',
-     main = 'Across-Participant Variances in RT',
-     sub = sprintf('variance test p = %.03f', var_test_within$p.value),
-     xlim = c(0,yl), ylim = c(0,yl))
-lines(c(0,.6), c(0,.6), col = 'black', lty = 'dashed', lwd = 1.5)
-
+# yl = ceiling(max(c(max(mean_rt_diff),max(mean_rt_easy)))*10)/10
+# plot(mean_rt_easy, mean_rt_diff, xlab = 'Easy trials', ylab = 'Difficult trials',
+#      main = 'Across-Participant Variances in RT',
+#      sub = sprintf('variance test p = %.03f', var_test_within$p.value),
+#      xlim = c(0,yl), ylim = c(0,yl))
+# lines(c(0,.6), c(0,.6), col = 'black', lty = 'dashed', lwd = 1.5)
+# 
 
 
 yl = ceiling(max(c(max(var_rt_diff),max(var_rt_easy)))*10)/10
