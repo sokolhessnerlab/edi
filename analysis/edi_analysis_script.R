@@ -1423,7 +1423,7 @@ min_aic = min(trialBack_AIC)
 barplot(trialBack_AIC, names.arg = trials,
         col = rgb(0,0,1,.5), xlab = 'Previous Trial Difficulty', ylab = 'AIC',
         main = 'AIC Values for Multiple Previous Trial Difficulty',
-        ylim = c(-8590, -8610),
+        ylim = c(-8850, -9070),
         border = 'black', xpd = FALSE, las = 2)
 box(bty="l")
 
@@ -1627,11 +1627,17 @@ for(ind in 1:length(possible_threshold_values)){
 
   cat(sprintf('This many people are < break_val: %g\n',sum(compositeSpanScores<break_val, na.rm = T)))
 
-  if((sum(compositeSpanScores<break_val, na.rm = T) == 1) | (sum(compositeSpanScores>break_val, na.rm = T) == 1)){
+  minimum_grp_count = 6; # What's the smallest group we will tolerate? 
+  minimum_grp_percent = 0.15; # What's the smallest group we will tolerate? 
+  if((sum(compositeSpanScores<break_val, na.rm = T) < minimum_grp_count) | 
+     (sum(compositeSpanScores>break_val, na.rm = T) < minimum_grp_count) | 
+     (sum(compositeSpanScores>break_val, na.rm = T)/sum(is.finite(compositeSpanScores)) < minimum_grp_percent) | 
+     (sum(compositeSpanScores<break_val, na.rm = T)/sum(is.finite(compositeSpanScores)) < minimum_grp_percent)){
     next # don't use any categorizations that create a 'group' with just 1 person
   }
 
-  m3_tmp = lmer(sqrtRT ~ 1 + all_diff_cont * prev_all_diff_cont * capacity_HighP1_lowN1_temp +
+  m3_tmp = lmer(sqrtRT ~ 1 + all_diff_cont * capacity_HighP1_lowN1_temp +
+                        prev_all_diff_cont * capacity_HighP1_lowN1_temp +
                   (1 | subjectnumber), data = clean_data_dm, REML = F);
   all_aic_values[ind] = AIC(m3_tmp)
 }
@@ -1660,16 +1666,13 @@ capacity_HighP1_lowN1_Best = (compositeSpanScores[keep_participants] > break_val
 clean_data_dm$capacity_HighP1_lowN1_best[clean_data_dm$complexspan > break_val] = 1;
 clean_data_dm$capacity_HighP1_lowN1_best[clean_data_dm$complexspan < break_val] = -1;
 
-m3_best = lmer(sqrtRT ~ 1 + all_diff_cont * prev_all_diff_cont * capacity_HighP1_lowN1_best +
+m3_best = lmer(sqrtRT ~ 1 + all_diff_cont * capacity_HighP1_lowN1_best +
+                       prev_all_diff_cont * capacity_HighP1_lowN1_temp +
                  (1 | subjectnumber), data = clean_data_dm, REML = F);
 summary(m3_best)
 m3_best_summary = summary(m3_best);
 m3_best_meanlik = exp(-m3_best_summary$logLik/nobs(m3_best));
 cat(sprintf('The best mean likelihood obtained with the CompositeSpan was %0.4f\n', m3_best_meanlik))
-
-m3_best_nointxn = lmer(sqrtRT ~ 1 + all_diff_cont * capacity_HighP1_lowN1_best + prev_all_diff_cont * capacity_HighP1_lowN1_best +
-                         (1 | subjectnumber), data = clean_data_dm, REML = F);
-summary(m3_best_nointxn) # THIS OUTPERFORMS THE FULLY-INTERACTIVE VERSION
 
 
 m3_best_continuousWMC_nointxn = lmer(sqrtRT ~ 1 + all_diff_cont * complexspan_demeaned + prev_all_diff_cont * complexspan_demeaned +
