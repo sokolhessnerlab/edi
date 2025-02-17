@@ -21,6 +21,8 @@ et_processing_file_name = normalizePath(dir(pattern = glob2rx('edi_et_processing
 ## Run the Eye-Tracking Processing Script ###########
 source(et_processing_file_name) # NOTE: This will take a long time!!
 
+
+
 ## Prepare for the rest of the processing ###########
 setwd(config$path$data$raw);
 
@@ -123,8 +125,9 @@ survey_data = as.data.frame(survey_data)
 # Make indices to identify which rows to keep!
 ind_complete = raw_qualtrics_data$Finished == 1; # completed the survey
 ind_nottest = raw_qualtrics_data$EI.1 < 900; # Subject IDs should be < 900
+ind_anonymous = raw_qualtrics_data$DistributionChannel == "anonymous"
 
-ind_overall = ind_complete & ind_nottest;
+ind_overall = ind_complete & ind_nottest & ind_anonymous;
 
 # Do the #s of Subjects match? 
 cat(sprintf('Qualtrics data has %g participants; decision-making data has %g participants.\n', sum(ind_overall), number_of_subjects))
