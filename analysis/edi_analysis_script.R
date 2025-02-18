@@ -194,9 +194,9 @@ library(corrplot)
 # GRAPHS: histograms, scatterplots, correlograms, pairwise correlations
 
 # Age
-mean(clean_data_survey$age, na.rm = T) # 19.8 years old (4/5/24)
-range(clean_data_survey$age, na.rm = T) # 12-35 (4/5/24) I think there is a typo - cge074 put 12
-sd(clean_data_survey$age, na.rm = T) # 2.63 years (4/5/24)
+mean(clean_data_survey$age, na.rm = T) # 20.0 years old (2/17/25)
+range(clean_data_survey$age, na.rm = T) # 18-27 (2/17/25)
+sd(clean_data_survey$age, na.rm = T) # 1.57 years (2/17/25)
 hist(clean_data_survey$age)
 
 # Race (1 = American Indian/Alaska Native; 2 = Black/African-American; 3 = East Asian; 4 = Native Hawaiian/Pacific Islander; 5 = South Asian; 6 = White; 7 = Bi-/Multi-racial (text); 8 = Other (text); 9 = Prefer not to say)
@@ -1166,7 +1166,7 @@ colnames(means_matrix) = c("Low WMC", "High WMC")
 
 # Bar plot with error bars
 WMCgraph = barplot(means_matrix, beside = TRUE, col = c("blue", "red"),
-                   ylim = c(0, 4),
+                   ylim = c(0, 2),
                    names.arg = colnames(means_matrix),
                    ylab = "Average RTs in Seconds",
                    main = "Choice Difficulty x WMC Group",
