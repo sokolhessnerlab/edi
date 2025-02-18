@@ -128,6 +128,9 @@ mean(mean_rts[keep_dm_rt]) # mean rt 1.56 seconds (Jan '25)
 ## Interoception Data Check #################################################
 
 has_hbd_data = is.finite(survey_data$dprime)
+#computing summary statistics for dprime
+summary(survey_data$dprime)
+
 
 ### EXCLUSION: Tone Task ####################################################
 
