@@ -80,6 +80,29 @@ hbdcolnames = c('subjectnumber',
 hbd_tonetask_trials = as.data.frame(hbd_tonetask_trials);
 colnames(hbd_tonetask_trials) <- hbdcolnames
 
+# Isolate the columns I want to compare
+hbd_tonetask_trials$choiceS1D0 <- as.numeric(hbd_tonetask_trials$choiceS1D0)
+hbd_tonetask_trials$syncstateS1D0 <- as.numeric(hbd_tonetask_trials$syncstateS1D0)
+
+# Make a column that displays 1 if the choice is correct, 0 if incorrect
+hbd_tonetask_trials$correct = ifelse(hbd_tonetask_trials$choiceS1D0 == hbd_tonetask_trials$syncstateS1D0, 1, 0)
+
+# Calculate the % correct by participant
+percent_correct_by_subject <- aggregate(correct ~ subjectnumber, data = hbd_tonetask_trials, FUN = function(x) {
+  sum(x) / length(x) * 100  # Percentage of correct responses
+})
+print(percent_correct_by_subject)
+
+#create a histogram to show percent correct
+hist(percent_correct_by_subject$correct, 
+     breaks = 10,        # Number of bins
+     col = "purple",    # Color of the bars
+     border = "black",   # Border color for bars
+     main = "Distribution of Percent Correct",  # Title of the plot
+     xlab = "Percent Correct",  # Label for x-axis
+     ylab = "Number of Subjects",  # Label for y-axis
+     xlim = c(0, 100))  # Set the x-axis limits from 0 to 100
+
 # Data Quality Checks & Exclusions ############################################
 
 # Exclude on the basis of DM task performance
