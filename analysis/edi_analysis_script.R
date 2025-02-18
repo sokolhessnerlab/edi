@@ -1,7 +1,7 @@
-# CGE Data Analysis Script
+# EDI Data Analysis Script
 #
-# Script to analyze the data collected in-person for CGE during Fall '23 & Winter '24
-# (Control & Gambling & Eyetracking) study.
+# Script to analyze the data collected in-person for EDI during Fall '24 & Winter '25
+# (Eye-Tracking, Decision Making, and Interoception) study.
 #
 
 rm(list=ls()); # Clear the workspace
@@ -11,11 +11,13 @@ rm(list=ls()); # Clear the workspace
 
 # STEP 1: Set the working directory
 # On PSH's computers...
-setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
+#setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
 # # On Von's PC Laptop "tabletas"...
 # setwd('C:/Users/jvonm/Documents/GitHub/cge');
 # # Von - May need just in case tabletas disappears again Sys.setenv(R_CONFIG_ACTIVE = 'tabletas')
 # Sys.setenv(R_CONFIG_ACTIVE = 'tabletas')
+# On SF's computers...
+setwd('/Users/sophie/Desktop/GitHub/edi/');
 
 #setwd('/Users/shlab/Documents/GitHub/cge')
 #Sys.setenv(R_CONFIG_ACTIVE = 'default')
@@ -209,6 +211,26 @@ sum(clean_data_survey$race == 7, na.rm = T) # 3
 sum(clean_data_survey$race == 8, na.rm = T) # 2
 sum(clean_data_survey$race == 9, na.rm = T) # 3
 
+# Making a pie chart for race
+race_counts <- table(clean_data_survey$race, useNA = "no")
+race_labels <- c(
+  "1" = "American Indian/Alaska Native",
+  "2" = "Black/African-American",
+  "3" = "East Asian",
+  "4" = "Native Hawaiian/Pacific Islander",
+  "5" = "South Asian",
+  "6" = "White",
+  "7" = "Bi-/Multi-racial",
+  "8" = "Other",
+  "9" = "Prefer not to say"
+)
+
+# corresponding pie chart labels to column names
+names(race_counts) <- race_labels[names(race_counts)]
+# labeling and formatting the chart
+pie(race_counts, main = "Demographic Distribution by Race", col = rainbow(length(race_counts)))
+
+
 # Gender of participants (1 = Man; 2 = Woman; 3 = Non-binary; 4 = Genderqueer; 5 = Gender expansive; 6 = Two-spirited; 7 = 3rd Gender; 8 = Agender; 9 = Not sure; 10 = Other(text); 11 = Prefer not to say)
 sum(clean_data_survey$gender == 1, na.rm = T) # 30
 sum(clean_data_survey$gender == 2, na.rm = T) # 47
@@ -239,7 +261,6 @@ sum(clean_data_survey$education == 7, na.rm = T) # 5
 sum(clean_data_survey$education == 8, na.rm = T) # 1
 sum(clean_data_survey$education == 9, na.rm = T) # 0
 sum(clean_data_survey$education == 10, na.rm = T) # 0
-
 
 
 # Main Questionnaire Scores:
