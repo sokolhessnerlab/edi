@@ -227,15 +227,15 @@ hist(clean_data_survey$age)
 
 # Race (1 = American Indian/Alaska Native; 2 = Black/African-American; 3 = East Asian; 4 = Native Hawaiian/Pacific Islander; 5 = South Asian; 6 = White; 7 = Bi-/Multi-racial (text); 8 = Other (text); 9 = Prefer not to say)
 clean_data_survey$race # was never loaded for some reason
-sum(clean_data_survey$race == 1, na.rm = T) # 3
-sum(clean_data_survey$race == 2, na.rm = T) # 4
-sum(clean_data_survey$race == 3, na.rm = T) # 4
+sum(clean_data_survey$race == 1, na.rm = T) # 0
+sum(clean_data_survey$race == 2, na.rm = T) # 0
+sum(clean_data_survey$race == 3, na.rm = T) # 1
 sum(clean_data_survey$race == 4, na.rm = T) # 0
-sum(clean_data_survey$race == 5, na.rm = T) # 0
-sum(clean_data_survey$race == 6, na.rm = T) # 66
-sum(clean_data_survey$race == 7, na.rm = T) # 3
-sum(clean_data_survey$race == 8, na.rm = T) # 2
-sum(clean_data_survey$race == 9, na.rm = T) # 3
+sum(clean_data_survey$race == 5, na.rm = T) # 1
+sum(clean_data_survey$race == 6, na.rm = T) # 67
+sum(clean_data_survey$race == 7, na.rm = T) # 1
+sum(clean_data_survey$race == 8, na.rm = T) # 0
+sum(clean_data_survey$race == 9, na.rm = T) # 1
 
 # Making a pie chart for race
 race_counts <- table(clean_data_survey$race, useNA = "no")
@@ -258,33 +258,33 @@ pie(race_counts, main = "Demographic Distribution by Race", col = rainbow(length
 
 
 # Gender of participants (1 = Man; 2 = Woman; 3 = Non-binary; 4 = Genderqueer; 5 = Gender expansive; 6 = Two-spirited; 7 = 3rd Gender; 8 = Agender; 9 = Not sure; 10 = Other(text); 11 = Prefer not to say)
-sum(clean_data_survey$gender == 1, na.rm = T) # 30
-sum(clean_data_survey$gender == 2, na.rm = T) # 47
-sum(clean_data_survey$gender == 3, na.rm = T) # 3
-sum(clean_data_survey$gender == 4, na.rm = T) # 1
+sum(clean_data_survey$gender == 1, na.rm = T) # 16
+sum(clean_data_survey$gender == 2, na.rm = T) # 55
+sum(clean_data_survey$gender == 3, na.rm = T) # 0
+sum(clean_data_survey$gender == 4, na.rm = T) # 0
 sum(clean_data_survey$gender == 5, na.rm = T) # 0
 sum(clean_data_survey$gender == 6, na.rm = T) # 0
 sum(clean_data_survey$gender == 7, na.rm = T) # 0
 sum(clean_data_survey$gender == 8, na.rm = T) # 0
 sum(clean_data_survey$gender == 9, na.rm = T) # 0
-sum(clean_data_survey$gender == 10, na.rm = T) # 1
+sum(clean_data_survey$gender == 10, na.rm = T) # 0
 sum(clean_data_survey$gender == 11, na.rm = T) # 0
 
 
 # Ethnicity of participants (1 = Hispanic/Latinx; 2 = Not Hispanic/Latinx; 3 = Prefer not to say)
-sum(clean_data_survey$ethnicity == 1, na.rm = T) # 12
-sum(clean_data_survey$ethnicity == 2, na.rm = T) # 73
-sum(clean_data_survey$ethnicity == 3, na.rm = T) # 0
+sum(clean_data_survey$ethnicity == 1, na.rm = T) # 4
+sum(clean_data_survey$ethnicity == 2, na.rm = T) # 65
+sum(clean_data_survey$ethnicity == 3, na.rm = T) # 2
 
 # Education (1 = No school; 2 = to 8th grade; 3 = Some HS, no diploma; 4 = HS/GED; 5 = Trade school; 6 = AA/S; 7 = BA/S; 8 = MA/S; 9 = Professional degree; 10 = PhD)
-sum(clean_data_survey$education == 1, na.rm = T) # 0
+sum(clean_data_survey$education == 1, na.rm = T) # 2
 sum(clean_data_survey$education == 2, na.rm = T) # 0
 sum(clean_data_survey$education == 3, na.rm = T) # 0
-sum(clean_data_survey$education == 4, na.rm = T) # 78
-sum(clean_data_survey$education == 5, na.rm = T) # 0
+sum(clean_data_survey$education == 4, na.rm = T) # 59
+sum(clean_data_survey$education == 5, na.rm = T) # 1
 sum(clean_data_survey$education == 6, na.rm = T) # 1
-sum(clean_data_survey$education == 7, na.rm = T) # 5
-sum(clean_data_survey$education == 8, na.rm = T) # 1
+sum(clean_data_survey$education == 7, na.rm = T) # 8
+sum(clean_data_survey$education == 8, na.rm = T) # 0
 sum(clean_data_survey$education == 9, na.rm = T) # 0
 sum(clean_data_survey$education == 10, na.rm = T) # 0
 
@@ -292,14 +292,14 @@ sum(clean_data_survey$education == 10, na.rm = T) # 0
 # Main Questionnaire Scores:
 
 # IUS - might be negative motivation to exert effort
-mean(clean_data_survey$IUS, na.rm = T) # M = 32.2
-sd(clean_data_survey$IUS, na.rm = T) # SD = 8.3
-median(clean_data_survey$IUS, na.rm = T) # 30.5
-range(clean_data_survey$IUS, na.rm = T) # 17-53
+mean(clean_data_survey$IUS, na.rm = T) # M = 33.20
+sd(clean_data_survey$IUS, na.rm = T) # SD = 9.25
+median(clean_data_survey$IUS, na.rm = T) # 33
+range(clean_data_survey$IUS, na.rm = T) # 15-57
 # SNS
-mean(clean_data_survey$SNS, na.rm = T) # M = 4.0
+mean(clean_data_survey$SNS, na.rm = T) # M = 3.95
 sd(clean_data_survey$SNS, na.rm = T) # SD = 0.97
-median(clean_data_survey$SNS, na.rm = T) # 4.2
+median(clean_data_survey$SNS, na.rm = T) # 4
 range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
 
