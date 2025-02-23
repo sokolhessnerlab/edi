@@ -302,17 +302,16 @@ sd(clean_data_survey$SNS, na.rm = T) # SD = 0.97
 median(clean_data_survey$SNS, na.rm = T) # 4
 range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
-
 cor_matrix = cor(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']),
                  use = 'complete.obs');
-cor.test(clean_data_survey$IUS, clean_data_survey$SNS) 
-cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) # correlated!
-cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, method = "spearman") # still correlated! 
-cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) 
+cor.test(clean_data_survey$IUS, clean_data_survey$SNS) #not correlated, p = 0.74
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.1765
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, method = "spearman") #p-value = 0.09205, trend toward slight negative corr
+cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.2795
 
 plot(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']));
 
-# IUS & Composite span may have a negative relationship. High IUS = Low Span; Low IUS = High Span
+# IUS & Composite span may have a slight negative relationship. High IUS = Low Span; Low IUS = High Span
 
 
 corrplot(cor_matrix, type = 'lower')
@@ -1040,13 +1039,12 @@ cat(sprintf('Out of a total of %i participants, we have O-Span scores for %i, Sy
             sum(is.finite(complexSpanScores$ospanScore)),
             sum(is.finite(complexSpanScores$symspanScore)),
             sum(is.finite(complexSpanScores$compositeSpanScore))))
-# Out of a total of 88 participants, we have O-Span scores for 73, Sym-Span scores for 74, and composite span scores for 85.
+# Out of a total of 73 participants, we have O-Span scores for 51, Sym-Span scores for 50, and composite span scores for 67.
 cat(sprintf('%i participants have both scores, %i participants are missing only one score, and %i participants are missing both scores.\n',
             sum(is.finite(complexSpanScores$ospanScore) & is.finite(complexSpanScores$symspanScore)),
             sum(xor(is.finite(complexSpanScores$ospanScore),is.finite(complexSpanScores$symspanScore))),
             number_of_subjects-sum(is.finite(complexSpanScores$compositeSpanScore))))
-# 62 participants have both scores, 23 participants are missing only one score, and 3 participants are missing both scores.
-
+# 34 participants have both scores, 33 participants are missing only one score, and 6 participants are missing both scores.
 # Mean, Median, and Variance of ospan, symspan, and compositespan
 mean_ospan = mean(complexSpanScores$ospanScore, na.rm = T)
 mean_symspan = mean(complexSpanScores$symspanScore, na.rm = T)
@@ -1063,6 +1061,21 @@ median_compositespan = median(complexSpanScores$compositeSpanScore, na.rm = T)
 variance_ospan = var(complexSpanScores$ospanScore, na.rm = T)
 variance_symspan = var(complexSpanScores$symspanScore, na.rm = T)
 variance_compositespan = var(complexSpanScores$compositeSpanScore, na.rm = T)
+
+cat("Mean ospan:", mean_ospan, "\n")
+cat("Mean symspan:", mean_symspan, "\n")
+cat("Mean compositeSpan:", mean_compositespan, "\n")
+
+cat("Median ospan:", median_ospan, "\n")
+cat("Median symspan:", median_symspan, "\n")
+cat("Median compositeSpan:", median_compositespan, "\n")
+
+cat("Variance ospan:", variance_ospan, "\n")
+cat("Variance symspan:", variance_symspan, "\n")
+cat("Variance compositeSpan:", variance_compositespan, "\n")
+
+max_compositespan = max(complexSpanScores$compositeSpanScore, na.rm = T)
+cat("Max composite span score:", max_compositespan, "\n")
 
 # Include in the processing - Correlation between OSpan and SymSpan
 ospanScores = complexSpanScores$ospanScore
@@ -1087,8 +1100,8 @@ lines(x = c(-1, 2), y = c(-1, 2)) # so line extends to edge
 
 capacity_HighP1_lowN1 = (compositeSpanScores > median_compositespan)*2-1;
 
-sum(capacity_HighP1_lowN1 == 1, na.rm = T) # 41
-sum(capacity_HighP1_lowN1 == -1, na.rm = T) # 44
+sum(capacity_HighP1_lowN1 == 1, na.rm = T) # 32
+sum(capacity_HighP1_lowN1 == -1, na.rm = T) # 35
 
 # Plot the distribution w/ the median value
 hist(compositeSpanScores, breaks = 10, xlab = 'Composite Span Score', main = 'Distribution of Spans');
