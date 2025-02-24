@@ -103,6 +103,17 @@ hist(percent_correct_by_subject$correct,
      ylab = "Number of Subjects",  # Label for y-axis
      xlim = c(0, 100))  # Set the x-axis limits from 0 to 100
 
+#printing summary stats for percent correct
+mean_percent_correct <- mean(percent_correct_by_subject$correct)
+median_percent_correct <- median(percent_correct_by_subject$correct)
+sd_percent_correct <- sd(percent_correct_by_subject$correct)
+range_percent_correct <- range(percent_correct_by_subject$correct)
+cat("Descriptive Statistics for Percent Correct:\n")
+cat("Mean:", mean_percent_correct, "\n") #Mean = 57.88
+cat("Median:", median_percent_correct, "\n") #Median = 54.19
+cat("Standard Deviation:", sd_percent_correct, "\n") #SD = 13.29
+cat("Range:", range_percent_correct[1], "to", range_percent_correct[2], "\n") #Range = 29.49 to 96.73
+
 # Data Quality Checks & Exclusions ############################################
 
 # Exclude on the basis of DM task performance
@@ -181,6 +192,15 @@ for (s in 1:number_of_subjects){
 }
 
 good_hbd_data = which(has_hbd_data & keep_hbd_tt_missedtrials & keep_hbd_tt_toofasttrials)
+
+#printing the number of people who were kept and excluded on the HB Tone Task
+num_kept_hbd_tt = sum(keep_hbd_tt_missedtrials & keep_hbd_tt_toofasttrials)
+num_excluded_hbd_tt = number_of_subjects - num_kept_hbd_tt
+# Print results
+cat("Heartbeat Tone Task:\n")
+cat("Kept:", num_kept_hbd_tt, "\n")
+cat("Excluded:", num_excluded_hbd_tt, "\n")
+
 
 ### Survey Exclusions
 # quick responses to surveys (still figuring out how that should be done)
