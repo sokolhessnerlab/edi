@@ -1237,6 +1237,33 @@ arrows(WMCgraph, means_matrix,
        angle = 90, code = 3, length = 0.1)
 box(bty="l")
 
+
+# Defining Heartbeat Detection Task Categories
+# Tone Task grouping
+# Define based on whether their individual performance was significantly 
+# (p = 0.05) better than chance or not. Better than chance = +1, not better than
+# chance = -1.
+thresh_pval = 0.05
+clean_data_dm$interocept_sigP1_nsN1 = as.numeric(clean_data_dm$pbetterthanchance < thresh_pval) - 
+  as.numeric(clean_data_dm$pbetterthanchance > thresh_pval)
+sum(clean_data_dm$interocept_sigP1_nsN1 == 1, na.rm = T)/170 # 26 good interoceptors
+sum(clean_data_dm$interocept_sigP1_nsN1 == -1, na.rm = T)/170 # 41 poor interoceptors
+
+# In regressions, we can use...
+# - pcorrect
+# - dprime (might be better behaved)
+# - interocept_sigP1_nsN1
+#
+# Can also do similar things for...
+# - counting task performance
+# - median split on tone task
+# - metacognitive performance (median split?)
+
+
+
+
+
+
 ## RT Regressions ############################################
 
 # RT on trials regressions
