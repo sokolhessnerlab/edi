@@ -71,6 +71,14 @@ for s = 1:nS
     syncState = output.params.syncState(ind); % In or out of sync
     choice = output.choice(ind); % response
     rating = output.rating(ind); % rating
+
+    if strcmp(subjIDs{s},'EDI035')
+        choice = 1-choice; % flip choices for Subject EDI035 - accuracy was
+        % 0.29 on the HBD task, indicating very good discrimination ability
+        % but incorrect button/label usage. Thus, we're flipping their
+        % choices to effectively re-classify them as a "good" interoceptor
+        % as they can reliably discriminate the two task conditions.
+    end
     
     % The below calculated assuming "in-sync" is signal.
     HT(s) = sum(choice(syncState==1)==1); % hit (say in-sync when in-sync)
