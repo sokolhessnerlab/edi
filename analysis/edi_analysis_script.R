@@ -949,7 +949,7 @@ for (subj in 1:number_of_clean_subjects){
 }
 
 # does prev. trial type influence RT on the current trial
-t.test(easy_easy_mean_rt, diff_easy_mean_rt, paired = T); # NOT for easy 4/5/24 (t(84) = 0.72255, p = 0.472) # thesis
+t.test(easy_easy_mean_rt, diff_easy_mean_rt, paired = T); # NOT for easy 5/26/25 (t(70) = 0.38431, p = 0.7019) # SF Thesis
 EE_mean = mean(easy_easy_mean_rt, na.rm = T) # 1.611737
 EE_sd = sd(easy_diff_mean_rt, na.rm = T) # 0.2656962
 DE_mean = mean(diff_easy_mean_rt, na.rm = T) # 1.603603
@@ -962,7 +962,7 @@ DE = length(easy_diff_mean_rt)
 pooled_sd = sqrt(((EE - 1) * EE_sd^2 + (DE - 1) * DE_sd^2)/ (EE + DE +2))
 
 cohen_d = (EE_mean - DE_mean) / pooled_sd
-cohen_d # 0.0308181
+cohen_d # 0.0142
 
 means = c(EE_mean, DE_mean)
 se = c(EE_sd, DE_sd)
@@ -971,7 +971,7 @@ barplot(means, beside = TRUE, col = c("skyblue", "salmon"),
         ylim = c(0, max(means + se) + 1), names.arg = c("Group 1", "Group 2"),
         ylab = "Mean Values", main = "Barplot of Group Means with Error Bars")
 
-t.test(diff_diff_mean_rt, easy_diff_mean_rt, paired = T); # NOT for difficult 4/5/24 (t(84) = 1.6342, p = 0.106)
+t.test(diff_diff_mean_rt, easy_diff_mean_rt, paired = T); # NOT for difficult 2/26/25 (t(70) = -0.2439, p = 0.808)
 DD_mean = mean(diff_diff_mean_rt, na.rm = T) # 1.610927
 DD_sd = sd(diff_diff_mean_rt, na.rm = T) # 0.2721176
 ED_mean = mean(easy_diff_mean_rt, na.rm = T) # 1.59511
@@ -984,7 +984,7 @@ ED = length(easy_diff_mean_rt)
 pooled_sd = sqrt(((DD - 1) * DD_sd^2 + (ED - 1) * ED_sd^2)/ (DD + ED +2))
 
 cohen_d = (DD_mean - ED_mean) / pooled_sd
-cohen_d # 0.05951211
+cohen_d # -0.01109
 
 means = c(DD_mean, ED_mean)
 se = c(DD_sd, ED_sd)
@@ -993,7 +993,7 @@ barplot(means, beside = TRUE, col = c("skyblue", "salmon"),
         ylim = c(0, max(means + se) + 1), names.arg = c("Group 1", "Group 2"),
         ylab = "Mean Values", main = "Barplot of Group Means with Error Bars")
 
-# A: Not at this level.
+# A: No, previous trial type does not seem to influence RT on current trial at this level
 
 # Plot the current trial as a function of prev. trial type
 plot(easy_easy_mean_rt, diff_easy_mean_rt, xlim = c(0.75,2.2), ylim = c(0.75,2.2),
@@ -1043,9 +1043,9 @@ for (subj in 1:number_of_clean_subjects){
                                                        (tmpdata$easyP1difficultN1[51:169] == 1)], na.rm = T);
 }
 
-t.test(diff_diff_mean_pgamble, easy_diff_mean_pgamble, paired = T); # not sig diff 2/25/24 (t(84) = 0.054225, p = 0.9569)
-t.test(diff_easy_mean_pgamble, easy_easy_mean_pgamble, paired = T); # not sig diff 2/25/24 (t(84) = -0.69596, p = 0.4884)
-t.test(diff_diff_mean_pgamble, easy_easy_mean_pgamble, paired = T); # not sig diff 2/25/24 (t(84) = 0.15362, p = 0.8783)
+t.test(diff_diff_mean_pgamble, easy_diff_mean_pgamble, paired = T); # not sig diff 2/26/25 (t(70) = -1.2398, p = 0.2192)
+t.test(diff_easy_mean_pgamble, easy_easy_mean_pgamble, paired = T); # not sig diff 2/26/25 (t(70) = -0.4075, p = 0.6849)
+t.test(diff_diff_mean_pgamble, easy_easy_mean_pgamble, paired = T); # not sig diff 2/26/25 (t(70) = -0.6797, p = 0.4989)
 
 #A: it looks like pgamble based upon subsequent trials is not significantly different, difficulty doesn't show effect on p gamble.
 # - may be due to not having intermediate pgambles?
@@ -1103,12 +1103,12 @@ compositeSpanScores = complexSpanScores$compositeSpanScore
 # clean_data_dm$wmc_cont = compositeSpanScores[keep_participants]
 # SEE: clean_data_dm$complexspan or clean_data_dm$complexspan_demeaned
 
-cor.test(ospanScores, symspanScores) # r(60) = 0.3703213, p = 0.00305 (as of 2/25/24)
-var.test(ospanScores, symspanScores) # similar variance (F(72) = 0.95278, p = 0.8378 as of 2/25/24)
-t.test(ospanScores, symspanScores, paired = T) # t(61) = 0.14979, p = 0.8814 (as of 2/12/24)
+cor.test(ospanScores, symspanScores) # r(32) = 0.19877 , p = 0.2597 (as of 2/26/25)
+var.test(ospanScores, symspanScores) # similar variance (F(50) = 0.90125, p = 0.7152 as of 2/26/25)
+t.test(ospanScores, symspanScores, paired = T) # t(33) = -0.5948, p = 0.556 (as of 2/26/25)
 
-# SUMMARY: O-Span & Sym-Span scores are correlated with each other, and not significantly
-# different from one another. They are NOT redundant (i.e., correlation is ~0.4).
+# SUMMARY: O-Span & Sym-Span scores have a weak positive correlation, and a similar variance. 
+# different from one another. They are NOT redundant.
 
 plot(ospanScores, symspanScores,
      pch = 19, col = rgb(.5, .5, .5, .5),
@@ -1258,10 +1258,37 @@ sum(clean_data_dm$interocept_sigP1_nsN1 == -1, na.rm = T)/170 # 41 poor interoce
 # - median split on tone task
 # - metacognitive performance (median split?)
 
+colnames (survey_data)
+#summary statistics for Dprime
+mean_value <- mean(survey_data$dprime, na.rm = TRUE) #Mean: 0.5109743
+median_value <- median(survey_data$dprime, na.rm = TRUE) #Median: 0.2290681
+sd_value <- sd(survey_data$dprime, na.rm = TRUE) #Standard Deviation: 0.8536081 
+range_values <- range(survey_data$dprime, na.rm = TRUE)
+range_value <- diff(range_values)
 
+#summary stats for pcorrectbyhalf_1 and pcorrectbyhalf_2
+mean_value <- mean(survey_data$pcorrectbyhalf_1, na.rm = TRUE)
+mean_value <- mean(survey_data$pcorrectbyhalf_2, na.rm = TRUE)
 
+#t-test to examine if there is a significant difference between pcorrect in the 1st v 2nd half of the Tone Task
+t.test(survey_data$pcorrectbyhalf_1, survey_data$pcorrectbyhalf_2, 
+       paired = TRUE, na.rm = TRUE) 
+# t = -1.6123, df = 68, p-value = 0.1115. There is not a significant difference in performance between the halves. slight trend toward ppl being less accurate in half 2
 
+#summary stats for confWrong and confRight
+mean_value <- mean(survey_data$confWrong, na.rm = TRUE) #mean confidence when wrong = 0.518
+mean_value <- mean(survey_data$confRight, na.rm = TRUE) #mean confidence when right = 0.573
+t.test(survey_data$confWrong, survey_data$confRight, 
+       paired = TRUE, na.rm = TRUE) # t = -5.6531, df = 68, p-value = 3.396e-07
+#participants were significantly less confident in their responses when they were wrong vs when they were right
 
+#summary stats for metacognition dprime Bayesian, a measure of metacognition adjusted for ability/accuracy in the task.
+mean_value <- mean(survey_data$metadprimeBayesian, na.rm = TRUE) #Mean: 0.354
+median_value <- median(survey_data$metadprimeBayesian, na.rm = TRUE) #Median: 0.159
+sd_value <- sd(survey_data$metadprimeBayesian, na.rm = TRUE) #Standard Deviation: 0.532
+
+# examining correlations between HB Tone Task Variables
+cor.test(survey_data$dprime, survey_data$metadprimeBayesian) #cor between dprime and metacognition dprime
 
 ## RT Regressions ############################################
 
