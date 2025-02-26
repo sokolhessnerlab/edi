@@ -157,7 +157,7 @@ keep_dm_rt = mean_rts > 0.85; # drop no one
 
 mean_rts[keep_dm_rt]
 hist(mean_rts[keep_dm_rt]) # histogram of mean rts
-mean(mean_rts[keep_dm_rt]) # mean rt 1.56 seconds (Jan '25)
+mean(mean_rts[keep_dm_rt]) # mean rt 1.548 seconds (2/25/25)
 
 ## Interoception Data Check #################################################
 
@@ -804,7 +804,7 @@ lines(c(0, 2.75), c(0, 2.75))
 points(mean(median_rt_diff), mean(median_rt_easy), pch = 16, col = rgb(1, 0, 1, .75), cex = 2.5)
 
 # test easy RTs vs. diff. RTs
-rt_mean_test = t.test(mean_rt_easy,mean_rt_diff, paired = T) # VERY significant 
+rt_mean_test = t.test(mean_rt_easy,mean_rt_diff, paired = T) # VERY significant t(70)= -7.7118, p = 6.197e-11
 mean_diff = mean(mean_rt_diff, na.rm = T) # 1.686421
 sd_diff = sd(mean_rt_diff, na.rm = T) # 0.3432346
 mean_easy = mean(mean_rt_easy, na.rm = T) # 1.447765
@@ -819,7 +819,7 @@ Easy = length(mean_rt_easy)
 pooled_sd = sqrt(((Diff - 1) * sd_diff^2 + (Easy - 1) * sd_easy^2)/ (Diff + Easy +2))
 
 cohen_d = (mean_diff - mean_easy) / pooled_sd
-cohen_d # 0.8341713
+cohen_d # 0.7013779
 
 se_easy = sd_easy/sqrt(length(mean_rt_easy))
 se_diff = sd_diff/sqrt(length(mean_rt_diff))
@@ -835,9 +835,8 @@ arrows(choiceDifficultyGraph, means,
        angle = 90, code = 3, length = 0.1)
 box(bty="l")
 
-rt_median_test = t.test(median_rt_easy,median_rt_diff, paired = T) # VERY significant (t(84) = -10.184, p = 2.493e-16)
+rt_median_test = t.test(median_rt_easy,median_rt_diff, paired = T) # VERY significant (t(70) = -7.2756, p = 3.918e-10)
 rt_median_test
-
 
 
 
