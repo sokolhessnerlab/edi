@@ -840,19 +840,19 @@ rt_median_test
 
 
 
-#A: yes, looks like on average rt of difficult decisions was slower than avg rt of easy decisions 4/11/24
+#A: yes, looks like on average rt of difficult decisions was slower than avg rt of easy decisions 5/25/25
 
 # Test for the across-participant variances in RTs by trial type
-rt_mean_vartest = var.test(mean_rt_easy,mean_rt_diff); # F(84) = 0.42266, p = 0.0001059
+rt_mean_vartest = var.test(mean_rt_easy,mean_rt_diff); # F(70) = 0.434, p = 0.0006091
 rt_mean_vartest
 var(mean_rt_easy)
 var(mean_rt_diff)
-rt_median_vartest = var.test(median_rt_easy,median_rt_diff); # F(84) = 0.36058, p = 4.987e-06
+rt_median_vartest = var.test(median_rt_easy,median_rt_diff); # F(70) = 0.367, p = 4.172e-05
 rt_median_vartest
 # A: RTs are more variable across people for diff. than easy trials
 
 # differences between variance of RTs in conditions WITHIN person
-var_test_within = t.test(var_rt_easy,var_rt_diff, paired = T); # t(84) = -5.8504, p = 9.154e-08
+var_test_within = t.test(var_rt_easy,var_rt_diff, paired = T); # t(70) = -3.978, p = 0.000167
 var_test_within
 
 # yl = ceiling(max(c(max(mean_rt_diff),max(mean_rt_easy)))*10)/10
