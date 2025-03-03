@@ -1292,6 +1292,20 @@ cor.test(survey_data$dprime, survey_data$metadprimeBayesian) #cor between dprime
 
 ## RT Regressions ############################################
 
+# RT regression with good/bad interoceptor conditions
+m0_intero = lm(sqrtRT ~ 1 + interocept_sigP1_nsN1, data = clean_data_dm)
+summary(m0_intero)
+#Coeff: -0.008968, p value: 1.65e-06, Adjusted R-Sq: 0.001935 #good interceptors have slightly faster RTs, overall effect size small. 
+
+#linear regression to test dprime values and RTs
+m0_dprime = lm(sqrtRT ~ 1 + dprime, data = clean_data_dm)
+summary(m0_dprime) #dprime had no meaningful effect on RTs
+
+#linear regression of percent correct on RTs
+m0_pcorrect = lm(sqrtRT ~ 1 + pcorrect, data = clean_data_dm)
+summary(m0_pcorrect)
+
+
 # RT on trials regressions
 library(lme4)
 library(lmerTest)
