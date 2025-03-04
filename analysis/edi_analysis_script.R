@@ -1274,6 +1274,9 @@ mean_value <- mean(survey_data$pcorrectbyhalf_2, na.rm = TRUE)
 t.test(survey_data$pcorrectbyhalf_1, survey_data$pcorrectbyhalf_2, 
        paired = TRUE, na.rm = TRUE) 
 # t = -1.6123, df = 68, p-value = 0.1115. There is not a significant difference in performance between the halves. slight trend toward ppl being less accurate in half 2
+cor.test(survey_data$pcorrectbyhalf_1, survey_data$pcorrectbyhalf_2)
+cor.test(survey_data$pcorrectbyhalf_1, survey_data$pcorrectbyhalf_2, method = 'spearman')
+# Highly correlated by either method
 
 #summary stats for confWrong and confRight
 mean_value <- mean(survey_data$confWrong, na.rm = TRUE) #mean confidence when wrong = 0.518
@@ -1289,21 +1292,10 @@ sd_value <- sd(survey_data$metadprimeBayesian, na.rm = TRUE) #Standard Deviation
 
 # examining correlations between HB Tone Task Variables
 cor.test(survey_data$dprime, survey_data$metadprimeBayesian) #cor between dprime and metacognition dprime
+cor.test(survey_data$dprime, survey_data$MRatioBayesian) # no cor between dprime and M-Ratio; separate measures!
 
-## RT Regressions ############################################
 
-# RT regression with good/bad interoceptor conditions
-m0_intero = lm(sqrtRT ~ 1 + interocept_sigP1_nsN1, data = clean_data_dm)
-summary(m0_intero)
-#Coeff: -0.008968, p value: 1.65e-06, Adjusted R-Sq: 0.001935 #good interceptors have slightly faster RTs, overall effect size small. 
 
-#linear regression to test dprime values and RTs
-m0_dprime = lm(sqrtRT ~ 1 + dprime, data = clean_data_dm)
-summary(m0_dprime) #dprime had no meaningful effect on RTs
-
-#linear regression of percent correct on RTs
-m0_pcorrect = lm(sqrtRT ~ 1 + pcorrect, data = clean_data_dm)
-summary(m0_pcorrect)
 
 
 # RT on trials regressions
@@ -1311,6 +1303,77 @@ library(lme4)
 library(lmerTest)
 
 clean_data_dm$sqrtRT = sqrt(clean_data_dm$reactiontime);
+clean_data_dm$easy = as.double(clean_data_dm$easyP1difficultN1 == 1)
+clean_data_dm$difficult = as.double(clean_data_dm$easyP1difficultN1 == -1)
+# input shifted version of desired content
+clean_data_dm$easyP1difficultN1_prev = c(0,clean_data_dm$easyP1difficultN1[1:(length(clean_data_dm$easyP1difficultN1)-1)])
+# fix the few problematic trials (#1)
+clean_data_dm$easyP1difficultN1_prev[clean_data_dm$trialnumber == 1] = 0;
+# input shifted version of desired content
+clean_data_dm$sqrtRT_prev = c(NA,clean_data_dm$sqrtRT[1:(length(clean_data_dm$sqrtRT)-1)])
+# fix the few problematic trials (#1)
+clean_data_dm$sqrtRT_prev[clean_data_dm$trialnumber == 1] = NA;
+
+
+## RT and Interoception Regressions ############################################
+
+# RT regression with good/bad interoceptor conditions
+m0_intero = lmer(sqrtRT ~ 1 + interocept_sigP1_nsN1 + (1 | subjectnumber), data = clean_data_dm)
+summary(m0_intero)
+# No significant net effect of being a good interoceptor on RT
+
+#linear regression to test dprime values and RTs
+m0_dprime = lmer(sqrtRT ~ 1 + dprime + (1 | subjectnumber), data = clean_data_dm)
+summary(m0_dprime) #dprime had no meaningful effect on RTs
+# Similarly for d-prime (as expected), no direct relationship between interoceptive ability & RT
+
+#linear regression of percent correct on RTs
+m0_pcorrect = lmer(sqrtRT ~ 1 + pcorrect + (1 | subjectnumber), data = clean_data_dm)
+summary(m0_pcorrect)
+# same thing
+
+# TAKEAWAY: Interoceptive ability has no simple & direct effect on decision speed.
+
+
+# 
+m1_currdiff_interoceptive_grp = lmer(sqrtRT ~ 1 + all_diff_cont * interocept_sigP1_nsN1 + (1 | subjectnumber), data = clean_data_dm)
+summary(m1_currdiff_interoceptive_grp)
+# Strong effect of interoception interacting with current difficulty. 
+# --> Good interoceptors are much slower on difficult trials (vs. easy)
+# Given betas, good interoceptors have steeper relationship between current 
+# difficulty & RT (1.15 -> 1.29, sqrtrt) than bad interoceptors (1.20 -> 1.28)
+#
+# Is most of the action on EASY trials? 
+
+m1_currdiff_interoceptive_dp = lmer(sqrtRT ~ 1 + all_diff_cont * dprime + (1 | subjectnumber), data = clean_data_dm)
+summary(m1_currdiff_interoceptive_dp)
+# Same findings
+
+m1_easydiff_interoceptive_dp = lmer(sqrtRT ~ 1 + easyP1difficultN1 * dprime + (1 | subjectnumber), data = clean_data_dm)
+summary(m1_easydiff_interoceptive_dp)
+# Same findings w/ categorical difficulty
+
+# TAKEAWAY: Better interoceptors seem to be more influenced by current trial
+# difficulty 
+
+m1_easydiffsep_interoceptive_grp = lmer(sqrtRT ~ 1 + easy * interocept_sigP1_nsN1 + 
+                                      difficult * interocept_sigP1_nsN1 + 
+                                      (1 | subjectnumber), data = clean_data_dm)
+summary(m1_easydiffsep_interoceptive_grp)
+# While above regressions suggest that easy trials might be different (and not
+# difficult)...
+# this actually suggests the opposite - difficult is slower for good interoceptors
+# than bad interoceptors (significantly; p = 4.7e-14) but there's no difference
+# on easy trials (p = 0.47). 
+
+
+# TODO
+# - do basic regressions above w/ curr. diff. using pcorrect too
+# - Bring in previous difficulty (prev_all_diff_cont and easyP1difficultN1_prev)
+#   in much the same way, alongside current difficulty. 
+
+
+
 
 ## Model 0: Current RT based on current easy difficult
 m0_diffcat = lm(sqrtRT ~ 1 + easyP1difficultN1, data = clean_data_dm); # LM
@@ -1393,15 +1456,6 @@ plot(x = xval_plot, y = (coef_vals["(Intercept)"] + xval_plot*coef_vals["all_dif
 
 
 ## Model 1: PREVIOUS DIFFICULTY: Create Shifted versions of difficulty for use in regressions
-
-# input shifted version of desired content
-clean_data_dm$easyP1difficultN1_prev = c(0,clean_data_dm$easyP1difficultN1[1:(length(clean_data_dm$easyP1difficultN1)-1)])
-# fix the few problematic trials (#1)
-clean_data_dm$easyP1difficultN1_prev[clean_data_dm$trialnumber == 1] = 0;
-# input shifted version of desired content
-clean_data_dm$sqrtRT_prev = c(NA,clean_data_dm$sqrtRT[1:(length(clean_data_dm$sqrtRT)-1)])
-# fix the few problematic trials (#1)
-clean_data_dm$sqrtRT_prev[clean_data_dm$trialnumber == 1] = NA;
 
 
 # Does previous difficulty influence subsequent RT?
@@ -1616,8 +1670,6 @@ summary(m3_prev_capacityCat_intxn_rfx)
 # Current difficulty predicts EVEN HIGHER RT for people with high capacity.
 
 #Q: separate easy and difficult based upon experienced difficulty
-clean_data_dm$easy = as.double(clean_data_dm$easyP1difficultN1 == 1)
-clean_data_dm$difficult = as.double(clean_data_dm$easyP1difficultN1 == -1)
 
 m3_capacityCat_intxn_rfx = lmer(sqrtRT ~ 1 + easy * capacity_HighP1_lowN1 + difficult * capacity_HighP1_lowN1 +
                                   (1 | subjectnumber), data = clean_data_dm);
