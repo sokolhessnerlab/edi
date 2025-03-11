@@ -1330,10 +1330,9 @@ summary(m0_dprime) #dprime had no meaningful effect on RTs
 #linear regression of percent correct on RTs
 m0_pcorrect = lmer(sqrtRT ~ 1 + pcorrect + (1 | subjectnumber), data = clean_data_dm)
 summary(m0_pcorrect)
-# same thing
+# same thing, no significant effect of pcorrect
 
 # TAKEAWAY: Interoceptive ability has no simple & direct effect on decision speed.
-
 
 # 
 m1_currdiff_interoceptive_grp = lmer(sqrtRT ~ 1 + all_diff_cont * interocept_sigP1_nsN1 + (1 | subjectnumber), data = clean_data_dm)
@@ -1356,6 +1355,17 @@ summary(m1_easydiff_interoceptive_dp)
 # TAKEAWAY: Better interoceptors seem to be more influenced by current trial
 # difficulty 
 
+#repeating these regressions with pcorrect instead of dprime 
+#Continuous Difficulty × pcorrect
+m1_currdiff_interoceptive_pc = lmer(sqrtRT ~ 1 + all_diff_cont * pcorrect + (1 | subjectnumber), data = clean_data_dm)
+summary(m1_currdiff_interoceptive_pc)
+#effect of trial difficulty on RT stronger for more accurate participants (higher pcorrect), p < 2e-16
+
+#Categorical Difficulty × pcorrect
+m1_easydiff_interoceptive_pc = lmer(sqrtRT ~ 1 + easyP1difficultN1 * pcorrect + (1 | subjectnumber), data = clean_data_dm)
+summary(m1_easydiff_interoceptive_pc)
+#same result
+
 m1_easydiffsep_interoceptive_grp = lmer(sqrtRT ~ 1 + easy * interocept_sigP1_nsN1 + 
                                       difficult * interocept_sigP1_nsN1 + 
                                       (1 | subjectnumber), data = clean_data_dm)
@@ -1367,12 +1377,32 @@ summary(m1_easydiffsep_interoceptive_grp)
 # on easy trials (p = 0.47). 
 
 
-# TODO
-# - do basic regressions above w/ curr. diff. using pcorrect too
-# - Bring in previous difficulty (prev_all_diff_cont and easyP1difficultN1_prev)
-#   in much the same way, alongside current difficulty. 
+#regression bringing in previous difficulty, continuous
+m1_pdiff_curdiff_interoceptive = lmer(sqrtRT ~ 1 + 
+                                   all_diff_cont * interocept_sigP1_nsN1 * prev_all_diff_cont + 
+                                   (1 | subjectnumber), 
+                                 data = clean_data_dm)
 
+summary(m1_pdiff_curdiff_interoceptive)
 
+#main effect of current difficulty, as seen prior. p < 2e-16
+#interoceptive ability is significant, p = 0.0190
+# current difficulty and interoception p = 1.22e-07
+#small but significant effect of interoception and prev. difficulty, p = 0.0103
+
+#TAKEAWAYS
+# better interoceptors tend to be slightly faster overall.
+#good interoceptors may be slightly influenced by previous difficulty
+#better interoceptors have a steeper change in RT in response to difficult trials
+
+#regression bringing in previous difficulty one trial back, categorical
+m2_pdiff_curdiff_interoceptive <- lmer(sqrtRT ~ 1 +  
+                                         all_diff_cont * interocept_sigP1_nsN1 * easyP1difficultN1_prev +  
+                                         (1 | subjectnumber),  
+                                       data = clean_data_dm)  
+
+summary(m2_pdiff_curdiff_interoceptive)
+#in this model, no significant interaction between interoception and prev difficulty
 
 
 ## Model 0: Current RT based on current easy difficult
