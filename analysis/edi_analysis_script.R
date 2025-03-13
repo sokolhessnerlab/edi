@@ -11,7 +11,7 @@ rm(list=ls()); # Clear the workspace
 
 # STEP 1: Set the working directory
 # On PSH's computers...
-#setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
+# setwd('/Users/sokolhessner/Documents/gitrepos/edi/');
 # # On Von's PC Laptop "tabletas"...
 # setwd('C:/Users/jvonm/Documents/GitHub/cge');
 # # Von - May need just in case tabletas disappears again Sys.setenv(R_CONFIG_ACTIVE = 'tabletas')
@@ -223,8 +223,11 @@ number_of_clean_subjects # 71 participants (Feb '25)
 # Create a re-scaled version of trial number for use in subsequent analyses
 clean_data_dm$trialnumberRS = clean_data_dm$trialnumber/max(clean_data_dm$trialnumber)
 
-
-
+# Create a better-behaved version of dprime using a square-root transform
+clean_data_dm$sqrtdprime = sqrt(clean_data_dm$dprime)
+clean_data_survey$sqrtdprime = sqrt(clean_data_survey$dprime)
+# hist(clean_data_survey$dprime)
+# hist(sqrt(clean_data_survey$dprime))
 
 
 # BASIC DATA ANALYSIS ############################################
@@ -322,6 +325,23 @@ sd(clean_data_survey$SNS, na.rm = T) # SD = 0.97
 median(clean_data_survey$SNS, na.rm = T) # 4
 range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
+
+
+
+# TODO Flesh out the below corr. matrix! Include...
+# - sqrtdprime
+# - metacognitive ability (M-ratio bayesian)
+# - difficulty rating session 1
+# - difficulty rating session 2
+# - count accuracy
+# - BMI
+# - Trait anxiety
+
+# optional?
+# - Mean Confidence (how much swagger do they have)
+# - any other D1 or D2 questions to include? 
+
+
 cor_matrix = cor(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']),
                  use = 'complete.obs');
 cor.test(clean_data_survey$IUS, clean_data_survey$SNS) #not correlated, p = 0.74
@@ -332,6 +352,7 @@ cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) #not 
 plot(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']));
 
 # IUS & Composite span may have a slight negative relationship. High IUS = Low Span; Low IUS = High Span
+
 
 
 corrplot(cor_matrix, type = 'lower')
@@ -1377,23 +1398,90 @@ summary(m1_easydiffsep_interoceptive_grp)
 # on easy trials (p = 0.47). 
 
 
-#regression bringing in previous difficulty, continuous
-m1_pdiff_curdiff_interoceptive = lmer(sqrtRT ~ 1 + 
-                                   all_diff_cont * interocept_sigP1_nsN1 * prev_all_diff_cont + 
-                                   (1 | subjectnumber), 
-                                 data = clean_data_dm)
+# regression bringing in previous difficulty, continuous
+m1_pdiff_curdiff_interoceptiveGrp = lmer(sqrtRT ~ 1 + 
+                                        all_diff_cont * interocept_sigP1_nsN1 + 
+                                        prev_all_diff_cont * interocept_sigP1_nsN1 +
+                                        (1 | subjectnumber), 
+                                      data = clean_data_dm)
 
-summary(m1_pdiff_curdiff_interoceptive)
+# A*B = A + B + A:B
+# A*B*C = A + B + C + A:B + A:C + B:C + A:B:C
+# A*B + A*C = A + B + A:B + C + A:C
 
-#main effect of current difficulty, as seen prior. p < 2e-16
-#interoceptive ability is significant, p = 0.0190
-# current difficulty and interoception p = 1.22e-07
-#small but significant effect of interoception and prev. difficulty, p = 0.0103
+summary(m1_pdiff_curdiff_interoceptiveGrp)
+
+# Main Effects
+# current difficulty slowing RT, as seen prior. p < 2e-16
+# interoceptive ability is significant, p = 0.02 (good interoceptors are faster)
+# -no effect- of previous difficulty
+
+# 2-way Interactions
+# current difficulty and interoception p = 4.8e-15 -> good interoceptors have stronger curr. diff. effect
+# previous difficulty and interoception, p = 3e-4 -> good interoceptors have weaker prev. diff. effect
 
 #TAKEAWAYS
-# better interoceptors tend to be slightly faster overall.
-#good interoceptors may be slightly influenced by previous difficulty
-#better interoceptors have a steeper change in RT in response to difficult trials
+# good interoceptors are...
+#   - faster overall.
+#   - more affected by current difficulty
+#   - less affected by previous difficulty
+
+
+# Are these effects of difficulty significant within-group?
+m1_pdiff_curdiff_interocep_GOODONLY = lmer(sqrtRT ~ 1 + all_diff_cont + prev_all_diff_cont +
+                                        (1 | subjectnumber), 
+                                      data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == 1,])
+m1_pdiff_curdiff_interocep_BADONLY = lmer(sqrtRT ~ 1 + all_diff_cont + prev_all_diff_cont +
+                                             (1 | subjectnumber), 
+                                           data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == -1,])
+summary(m1_pdiff_curdiff_interocep_GOODONLY)
+summary(m1_pdiff_curdiff_interocep_BADONLY)
+
+# Good interoceptors: current difficulty (prev. is not sig)
+# Bad interoceptors: current difficult and prev. difficulty
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## GOOD INTEROCEPTORS LOOK MOSTLY LIKE HIGH WMC PARTICIPANTS, CONTRARY TO HYPOTHESES ##
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Is interoception collinear with working memory capacity?
+cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore)
+cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore, method = 'spearman')
+
+cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore)
+cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore, method = 'spearman')
+
+plot(sqrt(clean_data_survey$dprime),clean_data_complexspan$compositeSpanScore,
+     xlab = 'Sqrt(D-prime)', ylab = 'Composite Span Score', col = rgb(0,0,0,.7), pch = 16, cex = 3)
+
+# YES. Correlation is around 0.33-ish, and significant with p(correct) or dprime, spearman or pearson
+# Good interoceptors have higher working memory capacity.
+
+# If you calculate binary good/bad interoceptors and compare that to a median split of WMC
+# you'll also get more matches than would be expected by chance (40/63). 
+
+
+# Running complementary models w/ diff. specifications of interoceptive ability
+m1_pdiff_curdiff_interoceptiveDprime = lmer(sqrtRT ~ 1 + 
+                                        all_diff_cont * sqrtdprime + 
+                                        prev_all_diff_cont * sqrtdprime +
+                                        (1 | subjectnumber), 
+                                      data = clean_data_dm)
+
+m1_pdiff_curdiff_interoceptivePcorrect = lmer(sqrtRT ~ 1 + 
+                                              all_diff_cont * pcorrect + 
+                                              prev_all_diff_cont * pcorrect +
+                                              (1 | subjectnumber), 
+                                            data = clean_data_dm)
+summary(m1_pdiff_curdiff_interoceptiveDprime)
+summary(m1_pdiff_curdiff_interoceptivePcorrect)
+# These find largely identical patterns; because p(correct) values range from 0.5 to 1,
+# there is an offset effect with the all_diff_cont:pcorrect interaction term. The pcorrect
+# regression implies a negative effect of current difficulty, but that's not how it works
+# out once you add in the interaction term & its offset. 
+
+
+
 
 #regression bringing in previous difficulty one trial back, categorical
 m2_pdiff_curdiff_interoceptive <- lmer(sqrtRT ~ 1 +  
