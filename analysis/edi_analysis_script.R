@@ -325,17 +325,60 @@ sd(clean_data_survey$SNS, na.rm = T) # SD = 0.97
 median(clean_data_survey$SNS, na.rm = T) # 4
 range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
-
-
+colnames(survey_data)
+#D1_B2 is difficulty ratiing for Day 1
+#D2_1A is difficulty rating for Day 2
 
 # TODO Flesh out the below corr. matrix! Include...
 # - sqrtdprime
-# - metacognitive ability (M-ratio bayesian)
-# - difficulty rating session 1
+# - metacognitive ability (MratioBayesian)
+# - difficulty rating session 1 
 # - difficulty rating session 2
-# - count accuracy
+# - count accuracy (CountAccuracyM)
 # - BMI
-# - Trait anxiety
+# - Trait anxiety (STAIT)
+
+cor_matrix = cor(cbind(
+  clean_data$sqrtdprime,
+  clean_data$MratioBayesian,  
+  clean_data$DifficultySession1,  
+  clean_data$DifficultySession2,  
+  clean_data$CountAccuracyM,  
+  clean_data$BMI,  
+  clean_data$STAIT  
+), use = 'complete.obs');
+
+# Pairwise correlation tests (Pearson by default)
+cor.test(clean_data$sqrtdprime, clean_data$MratioBayesian) 
+cor.test(clean_data$sqrtdprime, clean_data$D1_B2) 
+cor.test(clean_data$sqrtdprime, clean_data$D2_1A) 
+cor.test(clean_data$sqrtdprime, clean_data$CountAccuracyM) 
+cor.test(clean_data$sqrtdprime, clean_data$BMI) 
+cor.test(clean_data$sqrtdprime, clean_data$STAIT) 
+
+cor.test(clean_data$MratioBayesian, clean_data$D1_B2) 
+cor.test(clean_data$MratioBayesian, clean_data$D2_1A) 
+cor.test(clean_data$MratioBayesian, clean_data$CountAccuracyM) 
+cor.test(clean_data$MratioBayesian, clean_data$STAIT) 
+
+cor.test(clean_data$D1_B2, clean_data$D2_1A) 
+cor.test(clean_data$D1_B2, clean_data$CountAccuracyM) 
+cor.test(clean_data$D1_B2, clean_data$STAIT) 
+
+cor.test(clean_data$D2_1A, clean_data$CountAccuracyM) 
+cor.test(clean_data$D2_1A, clean_data$STAIT) 
+cor.test(clean_data$CountAccuracyM, clean_data$STAIT) 
+
+# D1_B1	refered to 'How motivated were you to earn as much money as possible during the monetary decision-making task?'
+cor.test(clean_data$sqrtdprime, clean_data$D1_B1)
+
+#testing mean confidence in day 2 with relevant variables
+cor.test(clean_data$MeanConfidence, clean_data$sqrtdprime)
+cor.test(clean_data$MeanConfidence, clean_data$CountAccuracyM)
+cor.test(clean_data$MeanConfidence, clean_data$STAIT)
+cor.test(clean_data$MeanConfidence, clean_data$pcorrect)
+cor.test(clean_data$MeanConfidence, clean_data$MratioBayesian)
+
 
 # optional?
 # - Mean Confidence (how much swagger do they have)
