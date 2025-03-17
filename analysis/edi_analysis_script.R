@@ -326,81 +326,146 @@ median(clean_data_survey$SNS, na.rm = T) # 4
 range(clean_data_survey$SNS, na.rm = T) # 2.1 6.0
 
 colnames(survey_data)
-#D1_B2 is difficulty ratiing for Day 1
+#D1_B2 is difficulty rating for Day 1
 #D2_1A is difficulty rating for Day 2
 
 # TODO Flesh out the below corr. matrix! Include...
 # - sqrtdprime
-# - metacognitive ability (MratioBayesian)
+# - metacognitive ability (MRatioBayesian)
 # - difficulty rating session 1 
 # - difficulty rating session 2
 # - count accuracy (CountAccuracyM)
 # - BMI
 # - Trait anxiety (STAIT)
 
-cor_matrix = cor(cbind(
-  clean_data$sqrtdprime,
-  clean_data$MratioBayesian,  
-  clean_data$DifficultySession1,  
-  clean_data$DifficultySession2,  
-  clean_data$CountAccuracyM,  
-  clean_data$BMI,  
-  clean_data$STAIT  
-), use = 'complete.obs');
+# cor_matrix = cor(cbind(
+#   clean_data_survey$sqrtdprime,
+#   clean_data_survey$MRatioBayesian,  
+#   clean_data_survey$DifficultySession1,  
+#   clean_data_survey$DifficultySession2,  
+#   clean_data_survey$CountAccuracyM,  
+#   clean_data_survey$BMI,  
+#   clean_data_survey$STAIT,
+#   clean_data_survey$IUS,
+#   clean_data_survey$SNS,
+#   clean_data_complexspan$compositeSpanScore
+# ), use = 'complete.obs');
 
+cor_data = cbind(
+  clean_data_survey[,c('sqrtdprime','MRatioBayesian',
+                       'D1_B2','D2_1A','CountAccuracyM',
+                       'BMI','STAIT','IUS','SNS')],
+  clean_data_complexspan['compositeSpanScore']
+);
+
+cor_matrix_pearson = cor(cor_data, use = 'complete.obs', method = 'pearson');
+cor_matrix_pearson_pvalues = cor.mtest(cor_data, use = 'complete.obs', method = 'pearson');
+
+cor_matrix_spearman = cor(cor_data, use = 'complete.obs', method = 'spearman');
+cor_matrix_spearman_pvalues = cor.mtest(cor_data, use = 'complete.obs', method = 'spearman');
+
+
+corrplot(cor_matrix_pearson, type = 'lower', diag = F, p.mat = cor_matrix_pearson_pvalues$p, sig.level = 0.01, col = rev(COL2('RdBu',200)))
+corrplot(cor_matrix_spearman, type = 'lower', diag = F, p.mat = cor_matrix_spearman_pvalues$p, sig.level = 0.01, col = rev(COL2('RdBu',200)))
+
+plot(cor_data);
+
+plot(cor_data[,c('sqrtdprime', 'SNS', 'compositeSpanScore')])
+
+# These suggest the following might be worth visualizing & exploring more:
+# - BMI and...
+#   - Day 1 difficulty (pearson & Spearman; higher BMI = easier)
+#   - Day 2 difficulty (pearson only; higher BMI = easier)
+# - IUS & STAIT (higher IUS, higher trait anxiety)
+# - Dprime and...
+#   - SNS (higher numeracy = higher dprime)
+#   - Composite span (higher WMC = higher dprime)
+#   - Day 2 difficulty (more difficult = lower performance)
+
+#### D-prime & ...
 # Pairwise correlation tests (Pearson by default)
-cor.test(clean_data$sqrtdprime, clean_data$MratioBayesian) 
-cor.test(clean_data$sqrtdprime, clean_data$D1_B2) 
-cor.test(clean_data$sqrtdprime, clean_data$D2_1A) 
-cor.test(clean_data$sqrtdprime, clean_data$CountAccuracyM) 
-cor.test(clean_data$sqrtdprime, clean_data$BMI) 
-cor.test(clean_data$sqrtdprime, clean_data$STAIT) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A) # r(50) = -0.38, p = 0.006
+cor.test(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore) # r(47) = 0.40, p = 0.004
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) # r(50) = 0.42, p = 0.002
 
-cor.test(clean_data$MratioBayesian, clean_data$D1_B2) 
-cor.test(clean_data$MratioBayesian, clean_data$D2_1A) 
-cor.test(clean_data$MratioBayesian, clean_data$CountAccuracyM) 
-cor.test(clean_data$MratioBayesian, clean_data$STAIT) 
+plot(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A)
+plot(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore)
+plot(clean_data_survey$sqrtdprime, clean_data_survey$SNS) 
 
-cor.test(clean_data$D1_B2, clean_data$D2_1A) 
-cor.test(clean_data$D1_B2, clean_data$CountAccuracyM) 
-cor.test(clean_data$D1_B2, clean_data$STAIT) 
+# Better interoceptors, in this study, also...
+# - rate the interoception task easier
+# - have higher WMC
+# - and have higher subjective numeracy
+#
+# ... why?? Engagement? Comfort in the study? Achievement orientation? ????
 
-cor.test(clean_data$D2_1A, clean_data$CountAccuracyM) 
-cor.test(clean_data$D2_1A, clean_data$STAIT) 
-cor.test(clean_data$CountAccuracyM, clean_data$STAIT) 
+# n.s.
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$MRatioBayesian) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B2) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$CountAccuracyM) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$BMI) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$STAIT) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$IUS) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) 
+
+#### IUS & ...
+cor.test(clean_data_survey$IUS, clean_data_survey$STAIT) # r(66) = 0.52, p = 0.000006
+plot(clean_data_survey$IUS, clean_data_survey$STAIT)
+
+# High trait anxiety people are intolerant of uncertainty
+
+# n.s.
+cor.test(clean_data_survey$IUS, clean_data_survey$SNS) #not correlated, p = 0.74
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.1765
+cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, method = "spearman") #p-value = 0.09205, trend toward slight negative corr
+
+# SNS & ...
+cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.2795
+
+
+
+cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$D1_B2) 
+cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$D2_1A) 
+cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$CountAccuracyM) 
+cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$STAIT) 
+
+cor.test(clean_data_survey$D1_B2, clean_data_survey$D2_1A) 
+cor.test(clean_data_survey$D1_B2, clean_data_survey$CountAccuracyM) 
+cor.test(clean_data_survey$D1_B2, clean_data_survey$STAIT) 
+
+cor.test(clean_data_survey$D2_1A, clean_data_survey$CountAccuracyM) 
+cor.test(clean_data_survey$D2_1A, clean_data_survey$STAIT) 
+
+cor.test(clean_data_survey$CountAccuracyM, clean_data_survey$STAIT) 
 
 # D1_B1	refered to 'How motivated were you to earn as much money as possible during the monetary decision-making task?'
-cor.test(clean_data$sqrtdprime, clean_data$D1_B1)
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B1) # Trend p = 0.08
+cor.test(clean_data_survey$SNS, clean_data_survey$D1_B1) # n.s.
+cor.test(clean_data_complexspan$compositeSpanScore, clean_data_survey$D1_B1) # n.s.
+# So higher motivation is weakly related to higher d-prime, but not SNS or WMC
+#
+# Day 1 motivation is unrelated to SNS report and WMC measurement (composite span)
+# Oddly, Day 1 motivation is wekaly related to dprime (measured day 2)
 
 #testing mean confidence in day 2 with relevant variables
-cor.test(clean_data$MeanConfidence, clean_data$sqrtdprime)
-cor.test(clean_data$MeanConfidence, clean_data$CountAccuracyM)
-cor.test(clean_data$MeanConfidence, clean_data$STAIT)
-cor.test(clean_data$MeanConfidence, clean_data$pcorrect)
-cor.test(clean_data$MeanConfidence, clean_data$MratioBayesian)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$sqrtdprime)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$CountAccuracyM)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$STAIT)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$pcorrect)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$MRatioBayesian)
 
 
 # optional?
 # - Mean Confidence (how much swagger do they have)
 # - any other D1 or D2 questions to include? 
 
-
-cor_matrix = cor(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']),
-                 use = 'complete.obs');
-cor.test(clean_data_survey$IUS, clean_data_survey$SNS) #not correlated, p = 0.74
-cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.1765
-cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, method = "spearman") #p-value = 0.09205, trend toward slight negative corr
-cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.2795
-
-plot(cbind(clean_data_survey[,c('IUS','SNS')],clean_data_complexspan['compositeSpanScore']));
-
-# IUS & Composite span may have a slight negative relationship. High IUS = Low Span; Low IUS = High Span
+# Basic visualization & analysis of difficulty ratings
+hist(clean_data_survey$D2_1A, 
+     xlim = c(0,8), 
+     breaks = seq(from = 0.5, to = 7.5, by = 1), 
+     main = '', xlab = 'Interoception Difficulty')
 
 
-
-corrplot(cor_matrix, type = 'lower')
-# Positive = blue
-# Negative = red
 
 
 # TAKEAWAYS: - does this still hold true?
