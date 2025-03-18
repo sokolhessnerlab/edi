@@ -422,8 +422,6 @@ cor.test(clean_data_survey$IUS, clean_data_complexspan$compositeSpanScore, metho
 # SNS & ...
 cor.test(clean_data_survey$SNS, clean_data_complexspan$compositeSpanScore) #not correlated, p-value = 0.2795
 
-
-
 cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$D1_B2) 
 cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$D2_1A) 
 cor.test(clean_data_survey$MRatioBayesian, clean_data_survey$CountAccuracyM) 
@@ -445,26 +443,45 @@ cor.test(clean_data_complexspan$compositeSpanScore, clean_data_survey$D1_B1) # n
 # So higher motivation is weakly related to higher d-prime, but not SNS or WMC
 #
 # Day 1 motivation is unrelated to SNS report and WMC measurement (composite span)
-# Oddly, Day 1 motivation is wekaly related to dprime (measured day 2)
+# Oddly, Day 1 motivation is weakly related to dprime (measured day 2)
 
 #testing mean confidence in day 2 with relevant variables
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$sqrtdprime)
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$CountAccuracyM)
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$STAIT)
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$pcorrect)
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$MRatioBayesian)
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$sqrtdprime) #positively correlated p = 0.009
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$CountAccuracyM) #n.s
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$STAIT) #n.s
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$pcorrect) #positively correlated p = 0.02
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$MRatioBayesian) #n.s
+
+#mean confidence is correlated with pcorrect and sqrtdprime, suggesting that
+#better interoceptors in this study were more confident overall regardless of accuracy of this conf
 
 
 # optional?
 # - Mean Confidence (how much swagger do they have)
 # - any other D1 or D2 questions to include? 
 
-# Basic visualization & analysis of difficulty ratings
+# Basic visualization & analysis of difficulty ratings for Day 2
 hist(clean_data_survey$D2_1A, 
      xlim = c(0,8), 
      breaks = seq(from = 0.5, to = 7.5, by = 1), 
      main = '', xlab = 'Interoception Difficulty')
 
+
+#creating overlayed histograms to show difference in self reported diff for D1 & D2
+# Create histogram for Day 2 (D2_1A)
+hist(clean_data_survey$D2_1A, 
+     xlim = c(0, 8), 
+     breaks = seq(from = 0.5, to = 7.5, by = 1), 
+     col = rgb(1, 0, 0, 0.5),  # red bars with 50% transparency
+     main = "Task Difficulty Ratings", 
+     xlab = "Difficulty Ratings of Tasks", 
+     ylab = "Frequency")
+
+# Overlay histogram for Day 1 (D1_B1)
+hist(clean_data_survey$D1_B1, 
+     breaks = seq(from = 0.5, to = 7.5, by = 1), 
+     col = rgb(0, 0, 1, 0.5),  # blue bars 50% transparency
+     add = TRUE)  # Adds to the existing histogram
 
 
 
