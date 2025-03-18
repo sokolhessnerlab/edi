@@ -372,6 +372,7 @@ plot(cor_data);
 
 plot(cor_data[,c('sqrtdprime', 'SNS', 'compositeSpanScore')])
 
+
 # These suggest the following might be worth visualizing & exploring more:
 # - BMI and...
 #   - Day 1 difficulty (pearson & Spearman; higher BMI = easier)
@@ -390,7 +391,8 @@ cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) # r(50) = 0.42, p 
 
 plot(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A)
 plot(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore)
-plot(clean_data_survey$sqrtdprime, clean_data_survey$SNS) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) #r(50) = 0.417, p = 0.002
+plot(clean_data_survey$sqrtdprime, clean_data_survey$SNS)
 
 # Better interoceptors, in this study, also...
 # - rate the interoception task easier
@@ -405,8 +407,7 @@ cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B2)
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$CountAccuracyM) 
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$BMI) 
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$STAIT) 
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$IUS) 
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) 
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$IUS) #p = .08, trending neg corr
 
 #### IUS & ...
 cor.test(clean_data_survey$IUS, clean_data_survey$STAIT) # r(66) = 0.52, p = 0.000006
@@ -482,7 +483,6 @@ hist(clean_data_survey$D1_B1,
      breaks = seq(from = 0.5, to = 7.5, by = 1), 
      col = rgb(0, 0, 1, 0.5),  # blue bars 50% transparency
      add = TRUE)  # Adds to the existing histogram
-
 
 
 # TAKEAWAYS: - does this still hold true?
