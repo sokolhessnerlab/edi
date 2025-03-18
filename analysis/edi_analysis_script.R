@@ -1668,9 +1668,12 @@ summary(m1_pdiff_curdiff_WMC_contzeroed)
 anova(m1_pdiff_curdiff_WMC_median, m1_pdiff_curdiff_WMC_contdemean, m1_pdiff_curdiff_WMC_contzeroed)
 # The categorical version is preferred - it does better. 
 
-# TODO
+# TODO 
+# Integrate interoception AND WMC into the same regression
+# Test SNS in the same type of regression (same pattern as WMC & Interocep?)
+# Graphing interoception effects
 # 
-
+# NEXT: Integrate time-in-task, or choice... look at pupil data? 
 
 
 
