@@ -391,7 +391,6 @@ cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) # r(50) = 0.42, p 
 
 plot(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A)
 plot(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore)
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) #r(50) = 0.417, p = 0.002
 plot(clean_data_survey$sqrtdprime, clean_data_survey$SNS)
 
 # Better interoceptors, in this study, also...
@@ -473,16 +472,21 @@ hist(clean_data_survey$D2_1A,
 hist(clean_data_survey$D2_1A, 
      xlim = c(0, 8), 
      breaks = seq(from = 0.5, to = 7.5, by = 1), 
-     col = rgb(1, 0, 0, 0.5),  # red bars with 50% transparency
+     col = rgb(1, 0, 1, 0.5),  # red bars with 50% transparency
      main = "Task Difficulty Ratings", 
      xlab = "Difficulty Ratings of Tasks", 
-     ylab = "Frequency")
+     ylab = "Frequency", xaxt="n")
+axis(side = 1, at = 1:7)
 
 # Overlay histogram for Day 1 (D1_B1)
-hist(clean_data_survey$D1_B1, 
+hist(clean_data_survey$D1_B2, 
      breaks = seq(from = 0.5, to = 7.5, by = 1), 
-     col = rgb(0, 0, 1, 0.5),  # blue bars 50% transparency
+     col = rgb(.2, .7, .7, 0.5),  # blue bars 50% transparency
      add = TRUE)  # Adds to the existing histogram
+
+t.test(clean_data_survey$D2_1A, clean_data_survey$D1_B2, paired = T)
+# t(67) = 14.1, p < 2.2e-16
+# Tone Task is consistently rated as harder than Decision-Making Task
 
 
 # TAKEAWAYS: - does this still hold true?
@@ -1264,23 +1268,38 @@ plot(ospanScores, symspanScores,
 lines(x = c(-1, 2), y = c(-1, 2)) # so line extends to edge
 
 capacity_HighP1_lowN1 = (compositeSpanScores > median_compositespan)*2-1;
+# NOTE: This is all participants who completed the WMC task
+# Includes people we drop from e.g. decision-making analysis
 
-sum(capacity_HighP1_lowN1 == 1, na.rm = T) # 32
-sum(capacity_HighP1_lowN1 == -1, na.rm = T) # 35
+sum(capacity_HighP1_lowN1 == 1, na.rm = T) # 32 (all participants)
+sum(capacity_HighP1_lowN1 == -1, na.rm = T) # 35 (all participants)
 
 # Plot the distribution w/ the median value
 hist(compositeSpanScores, breaks = 10, xlab = 'Composite Span Score', main = 'Distribution of Spans');
 abline(v = median_compositespan, col = 'red', lwd = 5)
 
 
+
+
+# Limiting analysis to those people we kept for DECISION-MAKING ANALYSIS...
+sum(clean_data_complexspan$compositeSpanScore > median(clean_data_complexspan$compositeSpanScore, na.rm = T), na.rm = T)
+sum(clean_data_complexspan$compositeSpanScore <= median(clean_data_complexspan$compositeSpanScore, na.rm = T), na.rm = T)
+# 31 with > median capacity
+# 34 with <= median capacity
+
+# Create *CLEAN DATA* capacity median split
+clean_data_complexspan$capacity_HighP1_lowN1 = (clean_data_complexspan$compositeSpanScore > 
+                                                  median(clean_data_complexspan$compositeSpanScore, na.rm = T))*2-1;
+
 clean_data_dm$capacity_HighP1_lowN1 = NA;
 
 for(s in 1:number_of_clean_subjects){
   subj_id = keep_participants[s];
-  clean_data_dm$capacity_HighP1_lowN1[clean_data_dm$subjectnumber == subj_id] = capacity_HighP1_lowN1[s];
+  clean_data_dm$capacity_HighP1_lowN1[clean_data_dm$subjectnumber == subj_id] = 
+    clean_data_complexspan$capacity_HighP1_lowN1[clean_data_complexspan$subjectnumber == subj_id];
 }
 
-clean_data_dm$complexspan_demeaned = clean_data_dm$complexspan - mean_compositespan;
+clean_data_dm$complexspan_demeaned = clean_data_dm$complexspan - mean(clean_data_complexspan$compositeSpanScore, na.rm = T);
 
 plot(sort(compositeSpanScores))
 abline(h = median_compositespan, col = 'red', lwd = 2)
@@ -1604,6 +1623,53 @@ summary(m1_pdiff_curdiff_interoceptivePcorrect)
 # there is an offset effect with the all_diff_cont:pcorrect interaction term. The pcorrect
 # regression implies a negative effect of current difficulty, but that's not how it works
 # out once you add in the interaction term & its offset. 
+
+clean_data_dm$complexspan_zeroed = clean_data_dm$complexspan - min(clean_data_dm$complexspan, na.rm = T)
+
+m1_pdiff_curdiff_WMC_median = lmer(sqrtRT ~ 1 + 
+                                     all_diff_cont * capacity_HighP1_lowN1 + 
+                                     prev_all_diff_cont * capacity_HighP1_lowN1 +
+                                     (1 | subjectnumber), 
+                                   data = clean_data_dm)
+
+m1_pdiff_curdiff_WMC_contdemean = lmer(sqrtRT ~ 1 + 
+                                     all_diff_cont * complexspan_demeaned + 
+                                     prev_all_diff_cont * complexspan_demeaned +
+                                     (1 | subjectnumber), 
+                                   data = clean_data_dm)
+
+m1_pdiff_curdiff_WMC_contzeroed = lmer(sqrtRT ~ 1 + 
+                                         all_diff_cont * complexspan_zeroed + 
+                                         prev_all_diff_cont * complexspan_zeroed +
+                                         (1 | subjectnumber), 
+                                       data = clean_data_dm)
+
+summary(m1_pdiff_curdiff_WMC_median)
+summary(m1_pdiff_curdiff_WMC_contdemean)
+summary(m1_pdiff_curdiff_WMC_contzeroed)
+
+# Findings:
+# CATEGORICAL, MEDIAN SPLIT
+# current difficulty has expected main effect
+# previous difficulty is trending p = 0.053
+# 
+# WMC interactions are trending
+# high WMC folks have MORE of a current difficulty effect p = 0.08
+# high WMC folks have LESS of a previous difficulty effect p = 0.07
+#
+#
+# CONTINUOUS, DE-MEANED
+# current & previous difficult main effects
+# nothing else (i.e. no other effects; no WMC effects at all)
+#
+# CONTINUOUS, ZEROED
+# Current difficulty
+# nothing else (i.e. no prev. difficulty effect, no WMC effects)
+anova(m1_pdiff_curdiff_WMC_median, m1_pdiff_curdiff_WMC_contdemean, m1_pdiff_curdiff_WMC_contzeroed)
+# The categorical version is preferred - it does better. 
+
+# TODO
+# 
 
 
 
