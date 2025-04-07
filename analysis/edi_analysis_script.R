@@ -1668,12 +1668,28 @@ summary(m1_pdiff_curdiff_WMC_contzeroed)
 anova(m1_pdiff_curdiff_WMC_median, m1_pdiff_curdiff_WMC_contdemean, m1_pdiff_curdiff_WMC_contzeroed)
 # The categorical version is preferred - it does better. 
 
+# Run categorical regression separately for low and high WMC.
+m1_pdiff_curdiff_WMC_lowOnly = lmer(sqrtRT ~ 1 + all_diff_cont + prev_all_diff_cont +
+                                      (1 | subjectnumber), 
+                                    data = clean_data_dm[clean_data_dm$capacity_HighP1_lowN1 == -1,])
+m1_pdiff_curdiff_WMC_highOnly = lmer(sqrtRT ~ 1 + all_diff_cont + prev_all_diff_cont +
+                                      (1 | subjectnumber), 
+                                    data = clean_data_dm[clean_data_dm$capacity_HighP1_lowN1 == 1,])
+
+summary(m1_pdiff_curdiff_WMC_lowOnly)
+# Main effects of current difficulty (p < 2e-16) and previous difficult (p = 0.007)
+summary(m1_pdiff_curdiff_WMC_highOnly)
+# Main effect of current difficulty (p < 2e-16); no effect of prev. difficulty (p = 0.92)
+
+
 # TODO 
 # Integrate interoception AND WMC into the same regression
 # Test SNS in the same type of regression (same pattern as WMC & Interocep?)
 # Graphing interoception effects
 # 
 # NEXT: Integrate time-in-task, or choice... look at pupil data? 
+
+
 
 
 
