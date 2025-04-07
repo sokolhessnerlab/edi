@@ -225,6 +225,7 @@ clean_data_dm$trialnumberRS = clean_data_dm$trialnumber/max(clean_data_dm$trialn
 
 # Create a better-behaved version of dprime using a square-root transform
 clean_data_dm$sqrtdprime = sqrt(abs(clean_data_dm$dprime))*((clean_data_dm$dprime>=0)*2-1)
+clean_data_dm$sqrtdprime_zeroed = clean_data_dm$sqrtdprime + min(clean_data_dm$sqrtdprime, na.rm = T);
 # Have to do it this way, b/c of (slight) negative dprime values
 clean_data_survey$sqrtdprime = sqrt(abs(clean_data_survey$dprime))*((clean_data_survey$dprime>=0)*2-1)
 # hist(clean_data_survey$dprime)
@@ -1592,11 +1593,13 @@ summary(m1_pdiff_curdiff_interocep_BADONLY)
 # Is interoception collinear with working memory capacity?
 cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore)
 cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore, method = 'spearman')
+cor.test(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore)
+cor.test(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore, method = 'spearman')
 
 cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore)
 cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore, method = 'spearman')
 
-plot(sqrt(clean_data_survey$dprime),clean_data_complexspan$compositeSpanScore,
+plot(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore,
      xlab = 'Sqrt(D-prime)', ylab = 'Composite Span Score', col = rgb(0,0,0,.7), pch = 16, cex = 3)
 
 # YES. Correlation is around 0.33-ish, and significant with p(correct) or dprime, spearman or pearson
@@ -1771,11 +1774,25 @@ int = -1; wmc = -1
 # interoception may not be warranted; see above, categorical often does
 # slightly better, and unsurprisingly; linearity isn't necessary expected here).
 m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont = lmer(sqrtRT ~ 1 + 
-                                   all_diff_cont * complexspan_zeroed * sqrtdprime + 
-                                   prev_all_diff_cont * complexspan_zeroed * sqrtdprime +
+                                   all_diff_cont * complexspan_zeroed * sqrtdprime_zeroed + 
+                                   prev_all_diff_cont * complexspan_zeroed * sqrtdprime_zeroed +
                                    (1 | subjectnumber), 
                                  data = clean_data_dm)
 summary(m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont)
+# 
+# ME of curr. diff. 
+#
+# Curr. diff interacts with WMC (higher span, less difficulty effect) (???)
+# Curr. diff interacts with D-Prime (higher d', stronger effect of curr. diff.)
+#
+# Prev. diff interacts with WMC (higher WMC, stronger neg. effect of prev. diff.)
+# Prev. diff interacts with D-Prime (higher d', stronger pos. effect of prev. diff.*)
+#
+# Pattern is... unexpected. WMC intxn effects are not in directions expected.
+# Given correlation btwn WMC & D-Prime, is this a statistical artifact, a la 
+# regression to the mean? 
+
+
 
 # TODO 
 # Integrate interoception AND WMC into the same regression
