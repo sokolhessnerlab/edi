@@ -224,8 +224,9 @@ number_of_clean_subjects # 71 participants (Feb '25)
 clean_data_dm$trialnumberRS = clean_data_dm$trialnumber/max(clean_data_dm$trialnumber)
 
 # Create a better-behaved version of dprime using a square-root transform
-clean_data_dm$sqrtdprime = sqrt(clean_data_dm$dprime)
-clean_data_survey$sqrtdprime = sqrt(clean_data_survey$dprime)
+clean_data_dm$sqrtdprime = sqrt(abs(clean_data_dm$dprime))*((clean_data_dm$dprime>=0)*2-1)
+# Have to do it this way, b/c of (slight) negative dprime values
+clean_data_survey$sqrtdprime = sqrt(abs(clean_data_survey$dprime))*((clean_data_survey$dprime>=0)*2-1)
 # hist(clean_data_survey$dprime)
 # hist(sqrt(clean_data_survey$dprime))
 
@@ -1681,6 +1682,100 @@ summary(m1_pdiff_curdiff_WMC_lowOnly)
 summary(m1_pdiff_curdiff_WMC_highOnly)
 # Main effect of current difficulty (p < 2e-16); no effect of prev. difficulty (p = 0.92)
 
+
+# Takeaway: in WMC domain, find the patterns within-group that we expect from
+# prior work (high WMC have strong effect of curr. diff. only; low WMC have 
+# effects of curr and prev. diff., and curr. diff. effect is slightly weaker). 
+# Differences BETWEEN high & low WMC are trending, depending on the exact
+# difference being examined. 
+
+
+# INTEROCEPTION & WMC
+# Put interoception and WMC into the same regression.
+# 63 people have BOTH a WMC score and an interoception score and so only those
+# 63 people contribute to this regression. So this is working with a smaller 
+# dataset! There are 65 people with WMC scores and 67 with interoception (so, 
+# 2 have WMC scores but not interoception; 4 have interoception scores but 
+# no WMC).
+# 
+# SO: 40 agree, meaning 23 don't (are classified as high in one AND low in 
+# the other, or vice versa). 
+m1_pdiff_curdiff_WMC_Interoception_median = lmer(sqrtRT ~ 1 + 
+                                 all_diff_cont * capacity_HighP1_lowN1 + 
+                                 prev_all_diff_cont * capacity_HighP1_lowN1 +
+                                 all_diff_cont * interocept_sigP1_nsN1 + 
+                                 prev_all_diff_cont * interocept_sigP1_nsN1 +
+                                 (1 | subjectnumber), 
+                               data = clean_data_dm)
+summary(m1_pdiff_curdiff_WMC_Interoception_median)
+# Current difficulty - main effect
+# no ME of prev. difficulty (p = 0.23)
+#
+# In this regression, WMC is ignored/has no effects. 
+# 
+# ME of interoception (good interoceptors are faster)
+# Interocept x Current difficulty (good interoceptors are more affected by curr. diff)
+# Interocept x Previous difficulty (good interoceptors are less affected by prev. diff)*
+#
+# *sorta; positive interaction, ME of prev. diff is neg (but not sig.). 
+
+# TAKEAWAY: when directly pitted against one another, categorical perspectives
+# indicate that interoception is more powerful than WMC in shaping effort 
+# deployment as a function of curr. & prev. difficulty. 
+# (.... but, "engagement"?)
+
+# More interactive model
+m1_pdiff_curdiff_WMC_Interoception_median_intxn_cat = lmer(sqrtRT ~ 1 + 
+                           all_diff_cont * capacity_HighP1_lowN1 * interocept_sigP1_nsN1 + 
+                           prev_all_diff_cont * capacity_HighP1_lowN1 * interocept_sigP1_nsN1 +
+                           (1 | subjectnumber), 
+                         data = clean_data_dm)
+summary(m1_pdiff_curdiff_WMC_Interoception_median_intxn_cat)
+# Fixed effects:
+# Estimate Std. Error         df t value Pr(>|t|)    
+# (Intercept)                                                     1.180e+00  1.427e-02  6.379e+01  82.688  < 2e-16 ***
+# all_diff_cont                                                   1.205e-01  4.114e-03  1.049e+04  29.292  < 2e-16 ***
+# capacity_HighP1_lowN1                                          -1.254e-02  1.427e-02  6.379e+01  -0.879  0.38284    
+# interocept_sigP1_nsN1                                          -3.334e-02  1.427e-02  6.379e+01  -2.336  0.02263 *  
+# prev_all_diff_cont                                             -5.416e-03  4.119e-03  1.049e+04  -1.315  0.18860    
+# all_diff_cont:capacity_HighP1_lowN1                            -8.676e-03  4.114e-03  1.049e+04  -2.109  0.03499 *  
+# all_diff_cont:interocept_sigP1_nsN1                             3.765e-02  4.114e-03  1.049e+04   9.150  < 2e-16 ***
+# capacity_HighP1_lowN1:interocept_sigP1_nsN1                     1.540e-03  1.427e-02  6.379e+01   0.108  0.91442    
+# capacity_HighP1_lowN1:prev_all_diff_cont                        4.546e-03  4.119e-03  1.049e+04   1.104  0.26978    
+# interocept_sigP1_nsN1:prev_all_diff_cont                        1.319e-02  4.119e-03  1.049e+04   3.201  0.00137 ** 
+# all_diff_cont:capacity_HighP1_lowN1:interocept_sigP1_nsN1      -2.335e-02  4.114e-03  1.049e+04  -5.674 1.43e-08 ***
+# capacity_HighP1_lowN1:interocept_sigP1_nsN1:prev_all_diff_cont  1.677e-03  4.119e-03  1.049e+04   0.407  0.68384    
+
+# curr. diff. for Good Interoceptors, high WMC (16 people)
+int = 1; wmc = 1
+1.205e-01 + -8.676e-03 * wmc + 3.765e-02 * int + -2.335e-02 * wmc * int # 0.126
+# curr. diff. for Good Interoceptors, low WMC (8 people)
+int = 1; wmc = -1
+1.205e-01 + -8.676e-03 * wmc + 3.765e-02 * int + -2.335e-02 * wmc * int # 0.190
+
+
+# curr. diff. for Poor Interoceptors, high WMC (15 people)
+int = -1; wmc = 1
+1.205e-01 + -8.676e-03 * wmc + 3.765e-02 * int + -2.335e-02 * wmc * int # 0.097
+# curr. diff. for Poor Interoceptors, low WMC (24 people)
+int = -1; wmc = -1
+1.205e-01 + -8.676e-03 * wmc + 3.765e-02 * int + -2.335e-02 * wmc * int # 0.068
+
+# Numbers of people in these groups are not huge (see: 16, 8, 15 for 3 of the groups)
+# This makes some of these categories (esp. good interoceptor, low WMC) likely not 
+# particularly reliable. Should be careful with interpretation from this. 
+
+
+# Continuous version of the same (above):
+# Expect this to not work as well (strong linear assumptions for WMC & 
+# interoception may not be warranted; see above, categorical often does
+# slightly better, and unsurprisingly; linearity isn't necessary expected here).
+m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont = lmer(sqrtRT ~ 1 + 
+                                   all_diff_cont * complexspan_zeroed * sqrtdprime + 
+                                   prev_all_diff_cont * complexspan_zeroed * sqrtdprime +
+                                   (1 | subjectnumber), 
+                                 data = clean_data_dm)
+summary(m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont)
 
 # TODO 
 # Integrate interoception AND WMC into the same regression
