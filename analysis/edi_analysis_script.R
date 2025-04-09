@@ -387,9 +387,9 @@ plot(cor_data[,c('sqrtdprime', 'SNS', 'compositeSpanScore')])
 
 #### D-prime & ...
 # Pairwise correlation tests (Pearson by default)
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A) # r(50) = -0.38, p = 0.006
-cor.test(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore) # r(47) = 0.40, p = 0.004
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) # r(50) = 0.42, p = 0.002
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A) # t = -1.6408, df = 65, p-value = 0.1057 is not significant anymore. 
+cor.test(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore) # t = 2.9855, df = 61, p-value = 0.00407
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$SNS) # t = 3.2929, df = 65, p-value = 0.001607
 
 plot(clean_data_survey$sqrtdprime, clean_data_survey$D2_1A)
 plot(clean_data_survey$sqrtdprime, clean_data_complexspan$compositeSpanScore)
@@ -408,7 +408,7 @@ cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B2)
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$CountAccuracyM) 
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$BMI) 
 cor.test(clean_data_survey$sqrtdprime, clean_data_survey$STAIT) 
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$IUS) #p = .08, trending neg corr
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$IUS) #t = -1.8423, df = 65, p-value = 0.06999 trending negative corr. 
 
 #### IUS & ...
 cor.test(clean_data_survey$IUS, clean_data_survey$STAIT) # r(66) = 0.52, p = 0.000006
@@ -439,16 +439,15 @@ cor.test(clean_data_survey$D2_1A, clean_data_survey$STAIT)
 cor.test(clean_data_survey$CountAccuracyM, clean_data_survey$STAIT) 
 
 # D1_B1	refered to 'How motivated were you to earn as much money as possible during the monetary decision-making task?'
-cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B1) # Trend p = 0.08
+cor.test(clean_data_survey$sqrtdprime, clean_data_survey$D1_B1) # not correlated w/ new dprime value. 
 cor.test(clean_data_survey$SNS, clean_data_survey$D1_B1) # n.s.
 cor.test(clean_data_complexspan$compositeSpanScore, clean_data_survey$D1_B1) # n.s.
-# So higher motivation is weakly related to higher d-prime, but not SNS or WMC
+# So higher motivation is not related to dprime, not SNS or WMC
 #
 # Day 1 motivation is unrelated to SNS report and WMC measurement (composite span)
-# Oddly, Day 1 motivation is weakly related to dprime (measured day 2)
 
 #testing mean confidence in day 2 with relevant variables
-cor.test(clean_data_survey$MeanConfidence, clean_data_survey$sqrtdprime) #positively correlated p = 0.009
+cor.test(clean_data_survey$MeanConfidence, clean_data_survey$sqrtdprime) #r(65) = 0.2235, p = 0.07
 cor.test(clean_data_survey$MeanConfidence, clean_data_survey$CountAccuracyM) #n.s
 cor.test(clean_data_survey$MeanConfidence, clean_data_survey$STAIT) #n.s
 cor.test(clean_data_survey$MeanConfidence, clean_data_survey$pcorrect) #positively correlated p = 0.02
@@ -1593,7 +1592,7 @@ summary(m1_pdiff_curdiff_interocep_BADONLY)
 # Is interoception collinear with working memory capacity?
 cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore)
 cor.test(clean_data_survey$dprime,clean_data_complexspan$compositeSpanScore, method = 'spearman')
-cor.test(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore)
+cor.test(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore) # r(61) = 0.357 p = .004
 cor.test(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore, method = 'spearman')
 
 cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore)
