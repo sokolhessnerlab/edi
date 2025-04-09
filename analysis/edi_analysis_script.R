@@ -1726,6 +1726,31 @@ summary(m1_pdiff_curdiff_WMC_Interoception_median)
 # deployment as a function of curr. & prev. difficulty. 
 # (.... but, "engagement"?)
 
+
+m1_pdiff_curdiff_WMC_Interoception_cont = lmer(sqrtRT ~ 1 + 
+                                                              all_diff_cont * complexspan_zeroed +
+                                                              all_diff_cont * sqrtdprime_zeroed + 
+                                                              prev_all_diff_cont * complexspan_zeroed +
+                                                              prev_all_diff_cont * sqrtdprime_zeroed +
+                                                              (1 | subjectnumber), 
+                                                            data = clean_data_dm)
+summary(m1_pdiff_curdiff_WMC_Interoception_cont)
+# Fixed effects:
+# Estimate Std. Error         df t value Pr(>|t|)    
+# (Intercept)                            1.171e+00  3.206e-02  6.553e+01  36.520  < 2e-16 ***
+# all_diff_cont                          1.371e-01  9.518e-03  1.049e+04  14.405  < 2e-16 ***
+# complexspan_zeroed                     1.443e-02  6.611e-02  6.540e+01   0.218   0.8279    
+# sqrtdprime_zeroed                     -4.954e-02  2.274e-02  6.479e+01  -2.179   0.0330 *  
+# prev_all_diff_cont                     1.077e-02  9.531e-03  1.049e+04   1.130   0.2587    
+# all_diff_cont:complexspan_zeroed      -4.205e-02  1.951e-02  1.049e+04  -2.155   0.0312 *  
+# all_diff_cont:sqrtdprime_zeroed        6.174e-02  6.522e-03  1.049e+04   9.466  < 2e-16 ***
+# complexspan_zeroed:prev_all_diff_cont -3.138e-02  1.954e-02  1.049e+04  -1.606   0.1083    
+# sqrtdprime_zeroed:prev_all_diff_cont   2.587e-02  6.531e-03  1.049e+04   3.961  7.5e-05 ***
+
+# similar pattern as with categorical regression above. 
+
+
+
 # More interactive model
 m1_pdiff_curdiff_WMC_Interoception_median_intxn_cat = lmer(sqrtRT ~ 1 + 
                            all_diff_cont * capacity_HighP1_lowN1 * interocept_sigP1_nsN1 + 
@@ -1784,7 +1809,7 @@ summary(m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont)
 # Curr. diff interacts with WMC (higher span, less difficulty effect) (???)
 # Curr. diff interacts with D-Prime (higher d', stronger effect of curr. diff.)
 #
-# Prev. diff interacts with WMC (higher WMC, stronger neg. effect of prev. diff.)
+# Prev. diff interacts with WMC (higher WMC, stronger neg. effect of prev. diff.) (TREND)
 # Prev. diff interacts with D-Prime (higher d', stronger pos. effect of prev. diff.*)
 #
 # Pattern is... unexpected. WMC intxn effects are not in directions expected.
@@ -1792,13 +1817,83 @@ summary(m1_pdiff_curdiff_WMC_Interoception_median_intxn_cont)
 # regression to the mean? 
 
 
+# Checking Subjective Numeracy (SNS)
+clean_data_dm$SNSdemeaned = clean_data_dm$SNS - mean(clean_data_survey$SNS);
+m1_pdiff_curdiff_SNS_cont = lmer(sqrtRT ~ 1 + 
+                                   all_diff_cont * SNSdemeaned + 
+                                   prev_all_diff_cont * SNSdemeaned +
+                                   (1 | subjectnumber), 
+                                 data = clean_data_dm)
+summary(m1_pdiff_curdiff_SNS_cont)
+# ME of current (p < 2e-16) and previous difficulty (p = 0.02)
+#
+# higher SNS = more of a current difficulty effect
+# higher SNS = less of a (neg.) previous difficulty effect
+#
+# SO SNS IS BEHAVING IN THE REGRESSION VERY SIMILARLY TO WMC & INTEROCEPTION
+# HIGHER VALUES --> MORE CURR. DIFF. EFFECT, LESS PREV. DIFF. EFFECT
+#
+# Hmmmm so interpreting WMC/Interoception/SNS effects is difficult. 
+
+
+# Residual Analysis
+# 1. Prioritize WMC by doing its regression first. 
+# 2. Ask whether interoception accounts for additional variance not otherwise
+#    captured by WMC.
+
+# Use m1_pdiff_curdiff_WMC_median model
+summary(m1_pdiff_curdiff_WMC_median)
+
+residuals_wmcmodel = residuals(m1_pdiff_curdiff_WMC_median)
+clean_data_dm$residuals_wmcmodel[is.finite(clean_data_dm$capacity_HighP1_lowN1) & 
+                                   is.finite(clean_data_dm$prev_all_diff_cont) & 
+                                   is.finite(clean_data_dm$all_diff_cont)] = residuals_wmcmodel
+
+m2_pdiff_curdiff_interoceptive <- lmer(residuals_wmcmodel ~ 1 +  
+                                         all_diff_cont * interocept_sigP1_nsN1 +  
+                                         prev_all_diff_cont * interocept_sigP1_nsN1 + 
+                                         (1 | subjectnumber),  
+                                       data = clean_data_dm)  
+summary(m2_pdiff_curdiff_interoceptive)
+
+# Singular warning - can't do the individual intercepts (makes sense b/c prior
+# regression took care of individual intercepts AND no new variance in that can 
+# be accounted for here; automatically removes the intercepts).
+
+m2_lm_pdiff_curdiff_interoceptive_cat <- lm(residuals_wmcmodel ~ 1 +  
+                                         all_diff_cont * interocept_sigP1_nsN1 +  
+                                         prev_all_diff_cont * interocept_sigP1_nsN1,  
+                                       data = clean_data_dm)  
+summary(m2_lm_pdiff_curdiff_interoceptive_cat)
+
+# MEs:
+# current difficulty (meaning prev. regression didn't get all of this)
+# Interoception (good interoceptors are faster, p = 2e-12)
+#
+# Interactions:
+# Good interoceptors are more affected by current difficulty (pos.)
+# Good interoceptors have a more positive effect of prev. difficulty
+# 
+# BUT: need to think of these findings in the context of the WMC regression
+# that this sits on top of (i.e. where the residuals come from). 
+
+m2_lm_pdiff_curdiff_interoceptive_cont <- lm(residuals_wmcmodel ~ 1 +  
+                                          all_diff_cont * sqrtdprime_zeroed +  
+                                          prev_all_diff_cont * sqrtdprime_zeroed,  
+                                        data = clean_data_dm)  
+summary(m2_lm_pdiff_curdiff_interoceptive_cont)
+# This regression (continuous) is technically better (lower AIC).
+
+
+
+
 
 # TODO 
-# Integrate interoception AND WMC into the same regression
-# Test SNS in the same type of regression (same pattern as WMC & Interocep?)
 # Graphing interoception effects
+# Do residual analysis? 
 # 
 # NEXT: Integrate time-in-task, or choice... look at pupil data? 
+
 
 
 
