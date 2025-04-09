@@ -1890,7 +1890,8 @@ summary(m2_lm_pdiff_curdiff_interoceptive_cont)
 
 # TODO 
 # Graphing interoception effects
-# Do residual analysis? 
+# Unpacking the 2-step regression results to understand how interoceptive
+# effects stand on top of the WMC effects
 # 
 # NEXT: Integrate time-in-task, or choice... look at pupil data? 
 
