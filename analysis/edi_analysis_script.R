@@ -1886,6 +1886,103 @@ summary(m2_lm_pdiff_curdiff_interoceptive_cont)
 
 
 
+# Integrate Time-on-Task
+
+m1_pdiff_curdiff_WMC_median_timeontask = lmer(sqrtRT ~ 1 + 
+                                     all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS + 
+                                     prev_all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS +
+                                     (1 | subjectnumber), 
+                                   data = clean_data_dm)
+
+m1_pdiff_curdiff_WMC_contdemean_timeontask = lmer(sqrtRT ~ 1 + 
+                                         all_diff_cont * complexspan_demeaned * trialnumberRS + 
+                                         prev_all_diff_cont * complexspan_demeaned * trialnumberRS +
+                                         (1 | subjectnumber), 
+                                       data = clean_data_dm)
+
+m1_pdiff_curdiff_WMC_contzeroed_timeontask = lmer(sqrtRT ~ 1 + 
+                                         all_diff_cont * complexspan_zeroed * trialnumberRS + 
+                                         prev_all_diff_cont * complexspan_zeroed * trialnumberRS +
+                                         (1 | subjectnumber), 
+                                       data = clean_data_dm)
+
+summary(m1_pdiff_curdiff_WMC_median)
+summary(m1_pdiff_curdiff_WMC_contdemean)
+summary(m1_pdiff_curdiff_WMC_contzeroed)
+
+anova(m1_pdiff_curdiff_WMC_median_timeontask, 
+      m1_pdiff_curdiff_WMC_contdemean_timeontask, 
+      m1_pdiff_curdiff_WMC_contzeroed_timeontask)
+# Categorical is preferred (its LL is more negative than either of the 
+# continuous regressions). 
+
+anova(m1_pdiff_curdiff_WMC_median_timeontask,
+      m1_pdiff_curdiff_WMC_median) # the regression including time-on-task is better
+
+
+m1_pdiff_curdiff_WMC_median_timeontask_2way = lmer(sqrtRT ~ 1 + 
+                                                all_diff_cont * capacity_HighP1_lowN1 +
+                                                all_diff_cont * trialnumberRS + 
+                                                prev_all_diff_cont * capacity_HighP1_lowN1 + 
+                                                prev_all_diff_cont * trialnumberRS +
+                                                (1 | subjectnumber), 
+                                              data = clean_data_dm)
+
+
+summary(m1_pdiff_curdiff_WMC_median_timeontask_2way)
+
+anova(m1_pdiff_curdiff_WMC_median_timeontask_2way, m1_pdiff_curdiff_WMC_median_timeontask)
+# Two way is preferred (/ the fully interactive version doesn't do significantly better)
+anova(m1_pdiff_curdiff_WMC_median_timeontask_2way, m1_pdiff_curdiff_WMC_median)
+# Time on-task with 2-way interactions is preferred to regression w/o them
+
+
+residuals_wmctimemodel_2way = residuals(m1_pdiff_curdiff_WMC_median_timeontask_2way)
+clean_data_dm$residuals_wmctimemodel_2way[is.finite(clean_data_dm$capacity_HighP1_lowN1) & 
+                                   is.finite(clean_data_dm$prev_all_diff_cont) & 
+                                   is.finite(clean_data_dm$all_diff_cont)] = residuals_wmctimemodel_2way
+
+# m2_pdiff_curdiff_interoceptive_timeontask <- lmer(residuals_wmctimemodel_2way ~ 1 +  
+#                                          all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS +  
+#                                          prev_all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS + 
+#                                          (1 | subjectnumber),  
+#                                        data = clean_data_dm)  
+# summary(m2_pdiff_curdiff_interoceptive_timeontask)
+# 
+# Singular warning - can't do the individual intercepts (makes sense b/c prior
+# regression took care of individual intercepts AND no new variance in that can 
+# be accounted for here; automatically removes the intercepts).
+
+m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way <- lm(residuals_wmctimemodel_2way ~ 1 +  
+                                              all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS +  
+                                              prev_all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS,  
+                                            data = clean_data_dm)  
+m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_2way <- lm(residuals_wmctimemodel_2way ~ 1 +  
+                                                         all_diff_cont * interocept_sigP1_nsN1 +
+                                                         all_diff_cont * trialnumberRS +  
+                                                         prev_all_diff_cont * interocept_sigP1_nsN1 +
+                                                         prev_all_diff_cont * trialnumberRS,
+                                                       data = clean_data_dm)  
+summary(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
+summary(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_2way)
+
+anova(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_2way,
+      m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
+# 3-way interactive regression appears to do better (AIC-wise & F-test wise)
+
+
+
+
+# UNPACK THE FOLLOWING:
+# - implied final betas by diff. & capacity & time from this regression
+#   (m1_pdiff_curdiff_WMC_median_timeontask_2way).
+# - modifications to those betas by this regression 
+#   (m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way), consider also
+#   comparing that story to the 2-way story for clarity/understanding.
+
+
+
+
 
 
 # TODO 
@@ -1893,7 +1990,7 @@ summary(m2_lm_pdiff_curdiff_interoceptive_cont)
 # Unpacking the 2-step regression results to understand how interoceptive
 # effects stand on top of the WMC effects
 # 
-# NEXT: Integrate time-in-task, or choice... look at pupil data? 
+# NEXT: Integrate choice? look at pupil data? 
 
 
 
