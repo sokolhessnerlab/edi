@@ -1970,14 +1970,18 @@ anova(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_2way,
       m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
 # 3-way interactive regression appears to do better (AIC-wise & F-test wise)
 
+# RUN THE 3-WAY REGRESSION SEPARATELY IN GOOD & POOR INTEROCEPTORS
 m2_lm_pdiff_curdiff_GOODinteroceptive_cat_timeontask_2way <- lm(residuals_wmctimemodel_2way ~ 1 +  
                                                               all_diff_cont * trialnumberRS +  
                                                               prev_all_diff_cont * trialnumberRS,  
                                                             data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == 1,])  
+# in GOOD interoceptors, prev. trial effect increases with time (ONLY SIG EFFECT)
 m2_lm_pdiff_curdiff_POORinteroceptive_cat_timeontask_2way <- lm(residuals_wmctimemodel_2way ~ 1 +  
                                                                   all_diff_cont * trialnumberRS +  
                                                                   prev_all_diff_cont * trialnumberRS,  
                                                                 data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == -1,])  
+# in POOR interoceptors, NO SIGNIFICANT ADDITIONAL CHANGES.
+
 
 
 # UNPACK THE FOLLOWING:
@@ -2111,6 +2115,11 @@ padc_poor_late = m2_fixef['prev_all_diff_cont'] +
 #
 # Poor interoceptors show less of an effect of current difficulty and a more 
 # negative effect of previous difficulty with time in the study. 
+
+# NOTE: separate regressions for good & poor interoceptors show...
+# GOOD INTEROCEPTORS HAVE MORE POSITIVE EFFECT OF PREV. DIFFICULTY W/ TIME
+# No other significant effects within good interoceptors and no effects at all
+# in poor interoceptors. 
 
 
 
