@@ -1970,18 +1970,147 @@ anova(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_2way,
       m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
 # 3-way interactive regression appears to do better (AIC-wise & F-test wise)
 
-
+m2_lm_pdiff_curdiff_GOODinteroceptive_cat_timeontask_2way <- lm(residuals_wmctimemodel_2way ~ 1 +  
+                                                              all_diff_cont * trialnumberRS +  
+                                                              prev_all_diff_cont * trialnumberRS,  
+                                                            data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == 1,])  
+m2_lm_pdiff_curdiff_POORinteroceptive_cat_timeontask_2way <- lm(residuals_wmctimemodel_2way ~ 1 +  
+                                                                  all_diff_cont * trialnumberRS +  
+                                                                  prev_all_diff_cont * trialnumberRS,  
+                                                                data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == -1,])  
 
 
 # UNPACK THE FOLLOWING:
-# - implied final betas by diff. & capacity & time from this regression
+# [x] implied final betas by diff. & capacity & time from this regression
 #   (m1_pdiff_curdiff_WMC_median_timeontask_2way).
-# - modifications to those betas by this regression 
+# [ ] modifications to those betas by this regression 
 #   (m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way), consider also
 #   comparing that story to the 2-way story for clarity/understanding.
 
+m1_fixef = fixef(m1_pdiff_curdiff_WMC_median_timeontask_2way)
+
+# Calculate Betas FOR FIRST REGRESSION
+# High WMC
+# Current Difficulty
+# Early
+adc_high_early = m1_fixef['all_diff_cont'] +
+  m1_fixef['all_diff_cont:capacity_HighP1_lowN1'] * 1 +
+  m1_fixef['all_diff_cont:trialnumberRS'] * 0;
+# Late
+adc_high_late = m1_fixef['all_diff_cont'] +
+  m1_fixef['all_diff_cont:capacity_HighP1_lowN1'] * 1 +
+  m1_fixef['all_diff_cont:trialnumberRS'] * 1;
+
+# --> 0.14 -> 0.11
+
+# Previous Difficulty
+# Early
+padc_high_early = m1_fixef['prev_all_diff_cont'] +
+  m1_fixef['capacity_HighP1_lowN1:prev_all_diff_cont'] * 1 +
+  m1_fixef['trialnumberRS:prev_all_diff_cont'] * 0;
+# Late
+padc_high_late = m1_fixef['prev_all_diff_cont'] +
+  m1_fixef['capacity_HighP1_lowN1:prev_all_diff_cont'] * 1 +
+  m1_fixef['trialnumberRS:prev_all_diff_cont'] * 1;
+
+# --> 0.02 -> -0.003
+
+# Low WMC
+# Current Difficulty
+# Early
+adc_low_early = m1_fixef['all_diff_cont'] +
+  m1_fixef['all_diff_cont:capacity_HighP1_lowN1'] * -1 +
+  m1_fixef['all_diff_cont:trialnumberRS'] * 0;
+# Late
+adc_low_late = m1_fixef['all_diff_cont'] +
+  m1_fixef['all_diff_cont:capacity_HighP1_lowN1'] * -1 +
+  m1_fixef['all_diff_cont:trialnumberRS'] * 1;
+
+# --> 0.12 -> 0.09 (sliiiightly lower, otherwise same pattern)
+
+# Previous Difficulty
+# Early
+padc_low_early = m1_fixef['prev_all_diff_cont'] +
+  m1_fixef['capacity_HighP1_lowN1:prev_all_diff_cont'] * -1 +
+  m1_fixef['trialnumberRS:prev_all_diff_cont'] * 0;
+# Late
+padc_low_late = m1_fixef['prev_all_diff_cont'] +
+  m1_fixef['capacity_HighP1_lowN1:prev_all_diff_cont'] * -1 +
+  m1_fixef['trialnumberRS:prev_all_diff_cont'] * 1;
+
+# --> 0.005 -> -0.02
+
+# OVERALL, these calculated betas confirm what the regression shows. Strong
+# effect of current difficulty with slighty (trend) differences between high & 
+# low WMC capacity, and a decline over time. Previous difficulty effects are
+# generally weak (trend), and seem to emerge over time in the study.
 
 
+m2_fixef = coef(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
+
+# Calculate Betas FOR FIRST REGRESSION
+# Good Interoceptors
+# Current Difficulty
+# Early
+adc_good_early = m2_fixef['all_diff_cont'] + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1'] * 1 + 
+  m2_fixef['all_diff_cont:trialnumberRS'] * 0 + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1:trialnumberRS'] * 1 * 0;
+# Late
+adc_good_late = m2_fixef['all_diff_cont'] + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1'] * 1 + 
+  m2_fixef['all_diff_cont:trialnumberRS'] * 1 + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1:trialnumberRS'] * 1 * 1;
+# 0.02 -> 0.05
+
+# Previous Difficulty
+# Early
+padc_good_early = m2_fixef['prev_all_diff_cont'] + 
+  m2_fixef['interocept_sigP1_nsN1:prev_all_diff_cont'] * 1 + 
+  m2_fixef['trialnumberRS:prev_all_diff_cont'] * 0 + 
+  m2_fixef['interocept_sigP1_nsN1:trialnumberRS:prev_all_diff_cont'] * 1 * 0;
+# Late
+padc_good_late = m2_fixef['prev_all_diff_cont'] + 
+  m2_fixef['interocept_sigP1_nsN1:prev_all_diff_cont'] * 1 + 
+  m2_fixef['trialnumberRS:prev_all_diff_cont'] * 1 + 
+  m2_fixef['interocept_sigP1_nsN1:trialnumberRS:prev_all_diff_cont'] * 1 * 1;
+# -0.01 -> 0.03
+
+
+# Poor Interoceptors
+# Current Difficulty
+# Early
+adc_poor_early = m2_fixef['all_diff_cont'] + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1'] * -1 + 
+  m2_fixef['all_diff_cont:trialnumberRS'] * 0 + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1:trialnumberRS'] * -1 * 0;
+# Late
+adc_poor_late = m2_fixef['all_diff_cont'] + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1'] * -1 + 
+  m2_fixef['all_diff_cont:trialnumberRS'] * 1 + 
+  m2_fixef['all_diff_cont:interocept_sigP1_nsN1:trialnumberRS'] * -1 * 1;
+# -0.01 -> -0.03
+
+# Previous Difficulty
+# Early
+padc_poor_early = m2_fixef['prev_all_diff_cont'] + 
+  m2_fixef['interocept_sigP1_nsN1:prev_all_diff_cont'] * -1 + 
+  m2_fixef['trialnumberRS:prev_all_diff_cont'] * 0 + 
+  m2_fixef['interocept_sigP1_nsN1:trialnumberRS:prev_all_diff_cont'] * -1 * 0;
+# Late
+padc_poor_late = m2_fixef['prev_all_diff_cont'] + 
+  m2_fixef['interocept_sigP1_nsN1:prev_all_diff_cont'] * -1 + 
+  m2_fixef['trialnumberRS:prev_all_diff_cont'] * 1 + 
+  m2_fixef['interocept_sigP1_nsN1:trialnumberRS:prev_all_diff_cont'] * -1 * 1;
+# 0.005 -> -0.02
+
+
+# OVERALL, Good interoceptors show an increasing effect of current difficulty
+# with time in the study, and possibly an emerging positive effect of previous
+# difficulty (is this facilitation???).
+#
+# Poor interoceptors show less of an effect of current difficulty and a more 
+# negative effect of previous difficulty with time in the study. 
 
 
 
