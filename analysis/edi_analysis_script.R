@@ -1281,7 +1281,6 @@ abline(v = median_compositespan, col = 'red', lwd = 5)
 
 
 
-
 # Limiting analysis to those people we kept for DECISION-MAKING ANALYSIS...
 sum(clean_data_complexspan$compositeSpanScore > median(clean_data_complexspan$compositeSpanScore, na.rm = T), na.rm = T)
 sum(clean_data_complexspan$compositeSpanScore <= median(clean_data_complexspan$compositeSpanScore, na.rm = T), na.rm = T)
@@ -1413,6 +1412,51 @@ clean_data_dm$interocept_sigP1_nsN1 = as.numeric(clean_data_dm$pbetterthanchance
   as.numeric(clean_data_dm$pbetterthanchance > thresh_pval)
 sum(clean_data_dm$interocept_sigP1_nsN1 == 1, na.rm = T)/170 # 26 good interoceptors
 sum(clean_data_dm$interocept_sigP1_nsN1 == -1, na.rm = T)/170 # 41 poor interoceptors
+
+##MAKING GRAPH FOR POSTER##
+
+#Making visual representation of the two groups (this graph is wrong I need to trouble shoot it)
+library(ggplot2)
+
+# re-do category calculation on the basis of pbetterthanchance in SURVEY data
+clean_data_survey$interocept_sigP1_nsN1 = as.numeric(clean_data_survey$pbetterthanchance < thresh_pval) - 
+  as.numeric(clean_data_survey$pbetterthanchance > thresh_pval)
+clean_data_survey$interocept_group <- ifelse(clean_data_survey$interocept_sigP1_nsN1 == 1, 
+                                         "Good Interoceptors", 
+                                         ifelse(clean_data_survey$interocept_sigP1_nsN1 == -1, 
+                                                "Poor Interoceptors", NA))
+
+# cutoff pbetterthanchance value ends up being ~0.5635
+# Set up bins so they hit this value
+bin1 = rev(seq(from = 0.5635, to = 0.4, by = -0.05))
+bin2 = seq(from = 0.5635, to = 1, by = 0.05)
+
+binedges = c(bin1, bin2[2:length(bin2)])
+
+# Plot histogram with orange and yellow to indicate interoception groups. 
+ggplot(clean_data_survey, aes(x = pcorrect, fill = interocept_group)) +
+  geom_histogram(breaks = binedges, position = "identity", color = "gray30") + 
+  scale_fill_manual(values = c("Good Interoceptors" = "#D95F02",    # orange
+                               "Poor Interoceptors" = "#FEC44F")) + # yellow
+  labs(title = "Distribution of Interoception Performance",
+       x = "Percent Correct on HB Detection Task",
+       y = "Number of Participants",
+       fill = "Group") +
+  theme_minimal()
+
+#Graph to explain the residual approach
+datapoints <- c(3, 2.4, 2, 1.8, 2.1, 2.68, 2.9, 2.2, 2.6, 2.4, 2.54)
+modelfit <- c(2.71, 2.5, 2.05, 1.96, 2.2, 2.4, 3.14, 2.27, 2.22, 2.56, 2.34)
+residual_vals <- datapoints - modelfit
+
+# Plot with thicker lines
+plot(datapoints, type = 'l', col = 'black', ylim = c(1.6, 3.2), lwd = 3)
+lines(modelfit, col = 'blue', lwd = 3)
+
+# Barplot for residuals
+barplot(residual_vals, col = 'magenta')
+abline(h = 0, col = 'black', lwd = 2)
+
 
 # In regressions, we can use...
 # - pcorrect
