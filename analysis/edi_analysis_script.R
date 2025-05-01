@@ -2096,6 +2096,46 @@ padc_low_late = m1_fixef['prev_all_diff_cont'] +
 
 m2_fixef = coef(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
 
+
+
+# Calculation of implied average/baseline RT by Interoception
+# AVERAGE
+(m1_fixef['(Intercept)'] + m2_fixef['(Intercept)'] + m2_fixef['interocept_sigP1_nsN1']*1)^2
+(m1_fixef['(Intercept)'] + m2_fixef['(Intercept)'] + m2_fixef['interocept_sigP1_nsN1']*-1)^2
+# Baseline RT for good interoceptors = 1.374
+# Baseline RT for poor interoceptors = 1.473
+# 
+# Difference of 100.2 ms (p < 0.0003)
+
+sum_m1 = summary(m1_pdiff_curdiff_WMC_median_timeontask_2way)
+sum_m2 = summary(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
+# +1 SE
+(m1_fixef['(Intercept)'] + sum_m1$coefficients[1,2] + 
+    m2_fixef['(Intercept)'] + sum_m2$coefficients[1,2] + 
+    (m2_fixef['interocept_sigP1_nsN1'] + sum_m2$coefficients[3,2])*1)^2
+(m1_fixef['(Intercept)'] + sum_m1$coefficients[1,2] + 
+    m2_fixef['(Intercept)'] + sum_m2$coefficients[1,2] + 
+    (m2_fixef['interocept_sigP1_nsN1'] + sum_m2$coefficients[3,2])*-1)^2
+# +1 SE for good interoceptors: 1.433
+# +1 SE for poor interoceptors: 1.508
+
+
+# -1 SE
+(m1_fixef['(Intercept)'] - sum_m1$coefficients[1,2] + 
+    m2_fixef['(Intercept)'] - sum_m2$coefficients[1,2] + 
+    (m2_fixef['interocept_sigP1_nsN1'] - sum_m2$coefficients[3,2])*1)^2
+(m1_fixef['(Intercept)'] - sum_m1$coefficients[1,2] + 
+    m2_fixef['(Intercept)'] - sum_m2$coefficients[1,2] + 
+    (m2_fixef['interocept_sigP1_nsN1'] - sum_m2$coefficients[3,2])*-1)^2
+# +1 SE for good interoceptors: 1.315
+# +1 SE for poor interoceptors: 1.441
+
+# TODO: Make graph feat. those mean values + the SE bars
+# Error bars are +/-1 SE
+
+
+
+
 # Calculate Betas FOR FIRST REGRESSION
 # Good Interoceptors
 # Current Difficulty
