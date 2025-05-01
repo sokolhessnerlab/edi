@@ -2132,7 +2132,34 @@ sum_m2 = summary(m2_lm_pdiff_curdiff_interoceptive_cat_timeontask_3way)
 
 # TODO: Make graph feat. those mean values + the SE bars
 # Error bars are +/-1 SE
+means <- c(1.374, 1.473)
+errors <- c(0.059, 0.035)  # ±1 SE
 
+# Creating colors that match prior graphs
+colors <- c("#D95F02", "#FEC44F")  # Orange, Yellow
+
+# Create bar plot without x-axis group labels
+bar_centers <- barplot(
+  means,
+  beside = TRUE,
+  col = colors,
+  ylim = c(1.2, 1.6),
+  names.arg = NULL,
+  ylab = "Baseline Reaction Time (s)",
+  main = "Baseline RT by Interoception Ability",
+  axes = TRUE
+)
+
+# Creating plain error bars (no arrowheads or ticks)
+arrows(
+  x0 = bar_centers,
+  y0 = means - errors,
+  x1 = bar_centers,
+  y1 = means + errors,
+  angle = 0,
+  code = 2,
+  length = 0.05
+)
 
 
 
