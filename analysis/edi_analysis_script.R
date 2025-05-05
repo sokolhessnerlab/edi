@@ -2143,11 +2143,13 @@ bar_centers <- barplot(
   means,
   beside = TRUE,
   col = colors,
-  ylim = c(1.2, 1.6),
+  ylim = c(1.25, 1.57),
   names.arg = NULL,
   ylab = "Baseline Reaction Time (s)",
   main = "Baseline RT by Interoception Ability",
-  axes = TRUE
+  axes = TRUE,
+  xpd = F,
+  border = NA
 )
 
 # Creating plain error bars (no arrowheads or ticks)
@@ -2158,7 +2160,8 @@ arrows(
   y1 = means + errors,
   angle = 0,
   code = 2,
-  length = 0.05
+  length = 0.05,
+  lwd = 6
 )
 
 
@@ -2219,6 +2222,129 @@ padc_poor_late = m2_fixef['prev_all_diff_cont'] +
   m2_fixef['interocept_sigP1_nsN1:trialnumberRS:prev_all_diff_cont'] * -1 * 1;
 # 0.005 -> -0.02
 
+baseline_adc_early = m1_fixef['all_diff_cont'] + m1_fixef['all_diff_cont:trialnumberRS'] * 0
+baseline_adc_late = m1_fixef['all_diff_cont'] + m1_fixef['all_diff_cont:trialnumberRS'] * 1
+
+baseline_padc_early = m1_fixef['prev_all_diff_cont'] + m1_fixef['trialnumberRS:prev_all_diff_cont'] * 0
+baseline_padc_late = m1_fixef['prev_all_diff_cont'] + m1_fixef['trialnumberRS:prev_all_diff_cont'] * 1
+
+# Calculate overall ADC & PADC effects incl. baseline values from m1
+# ALl Diff Cont
+# MEANS
+sum_adc_good_early = adc_good_early + baseline_adc_early
+sum_adc_poor_early = adc_poor_early + baseline_adc_early
+
+sum_adc_good_late = adc_good_late + baseline_adc_late
+sum_adc_poor_late = adc_poor_late + baseline_adc_late
+
+# 1 SE Values
+sum_adc_good_early_SE = 
+  # adc                       adc:trial
+  sum_m1$coefficients[2,2] + sum_m1$coefficients[7,2]*0 +
+  # adc                       adc:interocept            adc:trial                   adc:interocept:trial                   
+  sum_m2$coefficients[2,2] + sum_m2$coefficients[6,2]*1 + sum_m2$coefficients[7,2]*0 + sum_m2$coefficients[11,2]*1*0;
+sum_adc_poor_early_SE = 
+  # adc                       adc:trial
+  sum_m1$coefficients[2,2] + sum_m1$coefficients[7,2]*0 +
+  # adc                       adc:interocept            adc:trial                   adc:interocept:trial                   
+  sum_m2$coefficients[2,2] + sum_m2$coefficients[6,2]*-1 + sum_m2$coefficients[7,2]*0 + sum_m2$coefficients[11,2]*-1*0;
+sum_adc_good_late_SE = 
+  # adc                       adc:trial
+  sum_m1$coefficients[2,2] + sum_m1$coefficients[7,2]*1 +
+  # adc                       adc:interocept            adc:trial                   adc:interocept:trial                   
+  sum_m2$coefficients[2,2] + sum_m2$coefficients[6,2]*1 + sum_m2$coefficients[7,2]*1 + sum_m2$coefficients[11,2]*1*1;
+sum_adc_poor_late_SE = 
+  # adc                       adc:trial
+  sum_m1$coefficients[2,2] + sum_m1$coefficients[7,2]*1 +
+  # adc                       adc:interocept            adc:trial                   adc:interocept:trial                   
+  sum_m2$coefficients[2,2] + sum_m2$coefficients[6,2]*-1 + sum_m2$coefficients[7,2]*1 + sum_m2$coefficients[11,2]*-1*1;
+
+# Prev All Diff Cont
+sum_padc_good_early = padc_good_early + baseline_padc_early
+sum_padc_poor_early = padc_poor_early + baseline_padc_early
+
+sum_padc_good_late = padc_good_late + baseline_padc_late
+sum_padc_poor_late = padc_poor_late + baseline_padc_late
+
+# 1 SE Values
+sum_padc_good_early_SE =
+  # padc                       padc:trial
+  sum_m1$coefficients[5,2] + sum_m1$coefficients[9,2]*0 +
+  # padc                       padc:interocept            padc:trial                   padc:interocept:trial                   
+  sum_m2$coefficients[5,2] + sum_m2$coefficients[9,2]*1 + sum_m2$coefficients[10,2]*0 + sum_m2$coefficients[12,2]*1*0;
+sum_padc_poor_early_SE =
+  # padc                       padc:trial
+  sum_m1$coefficients[5,2] + sum_m1$coefficients[9,2]*0 +
+  # padc                       padc:interocept            padc:trial                   padc:interocept:trial                   
+  sum_m2$coefficients[5,2] + sum_m2$coefficients[9,2]*-1 + sum_m2$coefficients[10,2]*0 + sum_m2$coefficients[12,2]*-1*0;
+sum_padc_good_late_SE =
+  # padc                       padc:trial
+  sum_m1$coefficients[5,2] + sum_m1$coefficients[9,2]*1 +
+  # padc                       padc:interocept            padc:trial                   padc:interocept:trial                   
+  sum_m2$coefficients[5,2] + sum_m2$coefficients[9,2]*1 + sum_m2$coefficients[10,2]*1 + sum_m2$coefficients[12,2]*1*1;
+sum_padc_poor_late_SE =
+  # padc                       padc:trial
+  sum_m1$coefficients[5,2] + sum_m1$coefficients[9,2]*1 +
+  # padc                       padc:interocept            padc:trial                   padc:interocept:trial                   
+  sum_m2$coefficients[5,2] + sum_m2$coefficients[9,2]*-1 + sum_m2$coefficients[10,2]*1 + sum_m2$coefficients[12,2]*-1*1;
+
+
+# Create bar plot without x-axis group labels
+bar_centers <- barplot(
+  c(sum_adc_good_early, sum_adc_poor_early, sum_adc_good_late, sum_adc_poor_late),
+  beside = TRUE,
+  col = colors <- c("#D95F02", "#FEC44F","#D95F02", "#FEC44F"),  # Orange, Yellow,
+  ylim = c(0, .225),
+  names.arg = NULL,
+  ylab = "Effect of Current Difficulty on RT",
+  main = "Baseline RT by Interoception Ability",
+  axes = TRUE,
+  xpd = F,
+  border = NA
+)
+
+# Creating plain error bars (no arrowheads or ticks)
+arrows(
+  x0 = bar_centers,
+  y0 = c(sum_adc_good_early, sum_adc_poor_early, sum_adc_good_late, sum_adc_poor_late) - 
+    c(sum_adc_good_early_SE, sum_adc_poor_early_SE, sum_adc_good_late_SE, sum_adc_poor_late_SE),
+  x1 = bar_centers,
+  y1 = c(sum_adc_good_early, sum_adc_poor_early, sum_adc_good_late, sum_adc_poor_late) + 
+    c(sum_adc_good_early_SE, sum_adc_poor_early_SE, sum_adc_good_late_SE, sum_adc_poor_late_SE),
+  angle = 0,
+  code = 2,
+  length = 0.05,
+  lwd = 6
+)
+
+
+# Create bar plot without x-axis group labels
+bar_centers <- barplot(
+  c(sum_padc_good_early, sum_padc_poor_early, sum_padc_good_late, sum_padc_poor_late),
+  beside = TRUE,
+  col = colors <- c("#D95F02", "#FEC44F","#D95F02", "#FEC44F"),  # Orange, Yellow,
+  ylim = c(-.1, .1),
+  names.arg = NULL,
+  ylab = "Effect of Previous Difficulty on RT",
+  main = "Baseline RT by Interoception Ability",
+  axes = TRUE,
+  xpd = F,
+  border = NA
+)
+
+# Creating plain error bars (no arrowheads or ticks)
+arrows(
+  x0 = bar_centers,
+  y0 = c(sum_padc_good_early, sum_padc_poor_early, sum_padc_good_late, sum_padc_poor_late) - 
+    c(sum_padc_good_early_SE, sum_padc_poor_early_SE, sum_padc_good_late_SE, sum_padc_poor_late_SE),
+  x1 = bar_centers,
+  y1 = c(sum_padc_good_early, sum_padc_poor_early, sum_padc_good_late, sum_padc_poor_late) + 
+    c(sum_padc_good_early_SE, sum_padc_poor_early_SE, sum_padc_good_late_SE, sum_padc_poor_late_SE),
+  angle = 0,
+  code = 2,
+  length = 0.05,
+  lwd = 6
+)
 
 # OVERALL, Good interoceptors show an increasing effect of current difficulty
 # with time in the study, and possibly an emerging positive effect of previous
