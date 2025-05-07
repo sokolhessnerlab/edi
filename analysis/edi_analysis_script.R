@@ -1433,29 +1433,31 @@ bin2 = seq(from = 0.5635, to = 1, by = 0.05)
 
 binedges = c(bin1, bin2[2:length(bin2)])
 
-# Plot histogram with orange and yellow to indicate interoception groups. 
-ggplot(clean_data_survey, aes(x = pcorrect, fill = interocept_group)) +
-  geom_histogram(breaks = binedges, position = "identity", color = "gray30") + 
-  scale_fill_manual(values = c("Good Interoceptors" = "#D95F02",    # orange
+#plot of good and poor interoceptors split with thicker borders and no gridlines
+ggplot(clean_data_survey, aes(x = pcorrect, fill = interocept_group)) + 
+  geom_histogram(breaks = binedges, position = "identity", color = "black", size = 1.2) +  # thicker borders
+  scale_fill_manual(values = c("Good Interoceptors" = "#D95F02",  # orange
                                "Poor Interoceptors" = "#FEC44F")) + # yellow
   labs(title = "Distribution of Interoception Performance",
        x = "Percent Correct on HB Detection Task",
        y = "Number of Participants",
        fill = "Group") +
-  theme_minimal()
+  theme_minimal() +
+  theme(panel.grid = element_blank())  # remove gridlines
 
 #Graph to explain the residual approach
-datapoints <- c(3, 2.4, 2, 1.8, 2.1, 2.68, 2.9, 2.2, 2.6, 2.4, 2.54)
-modelfit <- c(2.71, 2.5, 2.05, 1.96, 2.2, 2.4, 3.14, 2.27, 2.22, 2.56, 2.34)
+datapoints <- c(3, 2.4, 2.39, 2.69, 2.23, 2.68)
+modelfit <- c(2.72, 2.18, 2.52, 2.73, 2.40, 2.51)
 residual_vals <- datapoints - modelfit
 
 # Plot with thicker lines
-plot(datapoints, type = 'l', col = 'black', ylim = c(1.6, 3.2), lwd = 3)
+plot(datapoints, type = 'l', col = 'black', ylim = c(1.9, 3.2), lwd = 3)
 lines(modelfit, col = 'blue', lwd = 3)
 
 # Barplot for residuals
 barplot(residual_vals, col = 'magenta')
 abline(h = 0, col = 'black', lwd = 2)
+
 
 
 # In regressions, we can use...
