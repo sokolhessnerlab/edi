@@ -1446,16 +1446,20 @@ ggplot(clean_data_survey, aes(x = pcorrect, fill = interocept_group)) +
   theme(panel.grid = element_blank())  # remove gridlines
 
 #Graph to explain the residual approach
-datapoints <- c(3, 2.4, 2.39, 2.69, 2.23, 2.68)
-modelfit <- c(2.72, 2.18, 2.52, 2.73, 2.40, 2.51)
+datapoints <- c(2.9, 2.5, 2.1, 2.5, 2.23, 2.8)
+modelfit <- c(2.72, 2.4, 2.2, 2.75, 2.40, 2.61)
 residual_vals <- datapoints - modelfit
 
 # Plot with thicker lines
-plot(datapoints, type = 'l', col = 'black', ylim = c(1.9, 3.2), lwd = 3)
-lines(modelfit, col = 'blue', lwd = 3)
+plot(datapoints, type = 'l', col = 'black', ylim = c(2.1, 3.0), lwd = 8)
+lines(modelfit, col = 'blue', lwd = 8, lty = 'dotted')
+
+# Plot with points instead of lines? Try it out? 
+plot(datapoints, type = 'p', col = 'black', ylim = c(2, 3), xlim = c(0.5,6.5), pch = 16, cex = 4)
+points(modelfit, col = rgb(0,0,1), pch = 18, cex = 4)
 
 # Barplot for residuals
-barplot(residual_vals, col = 'magenta')
+barplot(residual_vals, col = 'magenta', ylim = c(-0.3, 0.2))
 abline(h = 0, col = 'black', lwd = 2)
 
 
