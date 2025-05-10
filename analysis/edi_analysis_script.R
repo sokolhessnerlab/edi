@@ -2033,6 +2033,105 @@ m2_lm_pdiff_curdiff_POORinteroceptive_cat_timeontask_2way <- lm(residuals_wmctim
 # in POOR interoceptors, NO SIGNIFICANT ADDITIONAL CHANGES.
 
 
+m1_pdiff_curdiff_WMC_median_timeontask_2way_GOODinteroceptoronly = lmer(sqrtRT ~ 1 + 
+                                                     all_diff_cont * capacity_HighP1_lowN1 +
+                                                     all_diff_cont * trialnumberRS + 
+                                                     prev_all_diff_cont * capacity_HighP1_lowN1 + 
+                                                     prev_all_diff_cont * trialnumberRS +
+                                                     (1 | subjectnumber), 
+                                                     data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == 1,])  
+summary(m1_pdiff_curdiff_WMC_median_timeontask_2way_GOODinteroceptoronly)
+# No changes in current or previous difficulty with time. 
+# OTHER FINDINGS:
+#   General speeding with time
+#   all diff cont
+#   all diff cont x capacity (NEG.; steeper for low vs. high cap)
+  
+
+m1_pdiff_curdiff_WMC_median_timeontask_2way_POORinteroceptoronly = lmer(sqrtRT ~ 1 + 
+                                                      all_diff_cont * capacity_HighP1_lowN1 +
+                                                      all_diff_cont * trialnumberRS + 
+                                                      prev_all_diff_cont * capacity_HighP1_lowN1 + 
+                                                      prev_all_diff_cont * trialnumberRS +
+                                                      (1 | subjectnumber), 
+                                                    data = clean_data_dm[clean_data_dm$interocept_sigP1_nsN1 == -1,])  
+summary(m1_pdiff_curdiff_WMC_median_timeontask_2way_POORinteroceptoronly)
+
+# Current declines with time (p = 0.007)
+# Previous declines with time (p = 0.02)
+# OTHER FINDINGS:
+#     General speeding with time
+#     all diff cont
+#     all diff cont x capacity (POS.; steeper for high vs. low cap)
+
+m1_pdiff_curdiff_WMC_interocept_median_timeontask_3way = lmer(sqrtRT ~ 1 + 
+                                                  all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS +
+                                                  prev_all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS + 
+                                                  all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS +
+                                                  prev_all_diff_cont * interocept_sigP1_nsN1 * trialnumberRS + 
+                                                  (1 | subjectnumber), 
+                                                data = clean_data_dm)  
+summary(m1_pdiff_curdiff_WMC_interocept_median_timeontask_3way)
+
+m1_pdiff_curdiff_WMC_interocept_median_timeontask_2way = lmer(sqrtRT ~ 1 + 
+                                                                all_diff_cont * capacity_HighP1_lowN1 +
+                                                                prev_all_diff_cont * capacity_HighP1_lowN1 + 
+                                                                all_diff_cont * trialnumberRS +
+                                                                prev_all_diff_cont * trialnumberRS + 
+                                                                all_diff_cont * interocept_sigP1_nsN1 +
+                                                                prev_all_diff_cont * interocept_sigP1_nsN1 + 
+                                                                (1 | subjectnumber), 
+                                                              data = clean_data_dm)  
+summary(m1_pdiff_curdiff_WMC_interocept_median_timeontask_2way)
+
+anova(m1_pdiff_curdiff_WMC_interocept_median_timeontask_2way,
+      m1_pdiff_curdiff_WMC_interocept_median_timeontask_3way)
+# 3-way is significantly better
+
+
+# SIGNIFICANT TERMS:
+#                                                         Estimate Std. Error         df t value Pr(>|t|)    
+# (Intercept)                                             1.193e+00  1.448e-02  8.397e+01  82.416  < 2e-16 ***
+# all_diff_cont                                           1.351e-01  9.071e-03  1.048e+04  14.889  < 2e-16 ***
+# trialnumberRS                                          -3.967e-02  1.071e-02  1.048e+04  -3.702 0.000215 ***
+# interocept_sigP1_nsN1                                  -3.458e-02  1.502e-02  8.362e+01  -2.303 0.023782 *  
+# all_diff_cont:trialnumberRS                            -2.579e-02  1.464e-02  1.048e+04  -1.761 0.078215 .  
+# all_diff_cont:interocept_sigP1_nsN1                     2.017e-02  9.361e-03  1.048e+04   2.154 0.031240 *  
+# trialnumberRS:prev_all_diff_cont:interocept_sigP1_nsN1  2.901e-02  1.512e-02  1.048e+04   1.918 0.055146 .  
+
+#... no effects of WMC
+#... good interoceptors are faster overall
+#... all diff cont effect drops for poor interoceptors, but does not for good interoceptors
+#... positive prev diff effect for good interoceptors, neg. for poor interoceptors
+
+
+# CLOSE-ISH:
+# all_diff_cont:capacity_HighP1_lowN1                    -1.299e-02  9.113e-03  1.048e+04  -1.426 0.153913    
+
+
+# NON-SIGNIFICANT TERMS:
+# capacity_HighP1_lowN1                                  -5.207e-03  1.460e-02  8.397e+01  -0.357 0.722285    
+# prev_all_diff_cont                                      8.545e-03  9.103e-03  1.048e+04   0.939 0.347926    
+# capacity_HighP1_lowN1:trialnumberRS                    -1.476e-02  1.081e-02  1.048e+04  -1.366 0.172007    
+# capacity_HighP1_lowN1:prev_all_diff_cont               -9.792e-04  9.136e-03  1.049e+04  -0.107 0.914647    
+# trialnumberRS:prev_all_diff_cont                       -1.200e-02  1.467e-02  1.048e+04  -0.818 0.413453    
+# trialnumberRS:interocept_sigP1_nsN1                     9.409e-03  1.108e-02  1.048e+04   0.849 0.395748    
+# prev_all_diff_cont:interocept_sigP1_nsN1               -5.755e-03  9.388e-03  1.048e+04  -0.613 0.539853    
+# all_diff_cont:capacity_HighP1_lowN1:trialnumberRS       1.907e-02  1.473e-02  1.048e+04   1.294 0.195608    
+# capacity_HighP1_lowN1:trialnumberRS:prev_all_diff_cont  9.251e-03  1.475e-02  1.048e+04   0.627 0.530551    
+# all_diff_cont:trialnumberRS:interocept_sigP1_nsN1       2.031e-02  1.510e-02  1.048e+04   1.344 0.178872    
+
+
+clean_data_dm$ispoorinteroceptor = (clean_data_dm$interocept_sigP1_nsN1 == -1)*1
+m1_pdiff_curdiff_WMC_Poorinterocept_median_timeontask_3way = lmer(sqrtRT ~ 1 + 
+                                                                all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS +
+                                                                prev_all_diff_cont * capacity_HighP1_lowN1 * trialnumberRS + 
+                                                                all_diff_cont * ispoorinteroceptor * trialnumberRS +
+                                                                prev_all_diff_cont * ispoorinteroceptor * trialnumberRS + 
+                                                                (1 | subjectnumber), 
+                                                              data = clean_data_dm)  
+summary(m1_pdiff_curdiff_WMC_Poorinterocept_median_timeontask_3way)
+
 
 # UNPACK THE FOLLOWING:
 # [x] implied final betas by diff. & capacity & time from this regression
