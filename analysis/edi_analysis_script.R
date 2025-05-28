@@ -17,7 +17,7 @@ rm(list=ls()); # Clear the workspace
 # # Von - May need just in case tabletas disappears again Sys.setenv(R_CONFIG_ACTIVE = 'tabletas')
 # Sys.setenv(R_CONFIG_ACTIVE = 'tabletas')
 # On SF's computers...
-setwd('/Users/sophie/Desktop/GitHub/edi/');
+# setwd('/Users/sophie/Desktop/GitHub/edi/');
 
 #setwd('/Users/shlab/Documents/GitHub/cge')
 #Sys.setenv(R_CONFIG_ACTIVE = 'default')
@@ -1650,6 +1650,8 @@ cor.test(clean_data_survey$pcorrect,clean_data_complexspan$compositeSpanScore, m
 
 plot(clean_data_survey$sqrtdprime,clean_data_complexspan$compositeSpanScore,
      xlab = 'Sqrt(D-prime)', ylab = 'Composite Span Score', col = rgb(0,0,0,.7), pch = 16, cex = 3)
+abline(lm(clean_data_complexspan$compositeSpanScore ~ clean_data_survey$sqrtdprime),
+       lwd = 4, col = 'red')
 
 # YES. Correlation is around 0.33-ish, and significant with p(correct) or dprime, spearman or pearson
 # Good interoceptors have higher working memory capacity.
